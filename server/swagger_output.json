@@ -1,0 +1,1160 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "v1.0.0",
+    "title": "Personal Project",
+    "description": "Error tracking server"
+  },
+  "servers": [
+    {
+      "url": "https://handsomelai.shop",
+      "description": "Release environment"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Testing environment"
+    }
+  ],
+  "paths": {
+    "/api/1.0/event": {
+      "post": {
+        "tags": ["Event"],
+        "summary": "",
+        "description": "",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["all", "men", "women", "accessories"]
+            },
+            "description": "Enter category here."
+          },
+          {
+            "name": "paging",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "next_paging": {
+                      "type": "integer",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BadRequest-invalid-value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "Search for all product",
+        "description": "return a product list in one page (6 product per page)",
+        "parameters": [
+          {
+            "name": "paging",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "next_paging": {
+                      "type": "integer",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      }
+    },
+    "/api/products/search": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "Search for products by title",
+        "description": "return a product list in one page (6 product per page)",
+        "parameters": [
+          {
+            "name": "paging",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "next_paging": {
+                      "type": "integer",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid keyword or page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BadRequest-invalid-value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/details": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "Search for product by product id",
+        "description": "return a specific product",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isUser": {
+                      "example": "true"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid keyword or page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BadRequest-invalid-value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/shops": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "get stocks from physical shops",
+        "description": "return an variant array which have shop information and stocks (random stocks number)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "color_code": {
+                            "example": "#FFFFFF"
+                          },
+                          "size": {
+                            "example": "S"
+                          },
+                          "shopStocks": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/Shop"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid keyword or page"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/product": {
+      "post": {
+        "tags": ["Unused"],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "color": {
+                    "example": "any"
+                  },
+                  "colorName": {
+                    "example": "any"
+                  },
+                  "size": {
+                    "example": "any"
+                  },
+                  "stock": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/new/products/preorder": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "get preorder info",
+        "description": "get preorder info",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/user/signup": {
+      "post": {
+        "tags": ["User"],
+        "summary": "sign up the user account",
+        "description": "record the user information in the database, and return JWT token for autthentication",
+        "responses": {
+          "200": {
+            "description": "sign up successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "access_token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI1LCJpYXQiOjE2OTkwODc2MzEsImV4cCI6MTY5OTA5MTIzMX0.Mh16vZAmi_5badOHesHY4RZHkIc3jRmYRvLv5aDC72I"
+                        },
+                        "access_expired": {
+                          "type": "integer",
+                          "example": 3600
+                        },
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BadRequest-invalid-value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "example": "Ian"
+                  },
+                  "email": {
+                    "example": "Ian@gmail.com"
+                  },
+                  "password": {
+                    "example": "1234"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/signin": {
+      "post": {
+        "tags": ["User"],
+        "summary": "sign in by facebook",
+        "description": "check the user information in the database, and return JWT token for autthentication",
+        "responses": {
+          "200": {
+            "description": "sign up successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "access_token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI1LCJpYXQiOjE2OTkwODc2MzEsImV4cCI6MTY5OTA5MTIzMX0.Mh16vZAmi_5badOHesHY4RZHkIc3jRmYRvLv5aDC72I"
+                        },
+                        "access_expired": {
+                          "type": "integer",
+                          "example": 3600
+                        },
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BadRequest-invalid-value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "example": "facebook"
+                  },
+                  "access_token": {
+                    "exxample": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI1LCJpYXQiOjE2OTkyNTgyMjQsImV4cCI6MTY5OTI2MTgyNH0.v4o5kTVx8PbDKcPSpYIe8VdQbYqHSXazhPy-YdV8XpM"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/profile": {
+      "get": {
+        "tags": ["User"],
+        "summary": "get user information",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/user/chat/history": {
+      "post": {
+        "tags": ["User"],
+        "summary": "User chat history from chat room",
+        "description": "Return a list of chat history based on user ID",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "sendTime": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "isUser": {
+                          "type": "boolean"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request: Please provide correct JWT token."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jwtToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/browsingHistory": {
+      "get": {
+        "tags": ["User"],
+        "summary": "get previous browsing products records",
+        "description": "return 20 newest records per request",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BrowsingHistory"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["User"],
+        "summary": "delete browsing products records",
+        "description": "delete all the records",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "records": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JWT token error"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/marketing/campaigns": {
+      "get": {
+        "tags": ["Marketing"],
+        "summary": "get campaign information",
+        "description": "return a list of campaign object",
+        "responses": {
+          "200": {
+            "description": "success operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Campaign"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Unused"],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "example": "any"
+                  },
+                  "story": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/order/checkout": {
+      "post": {
+        "tags": ["Checkout"],
+        "summary": "",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "create a new order",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "number": {
+                          "type": "integer",
+                          "example": 4465123465
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Bad token"
+          },
+          "403": {
+            "description": "Wrong token"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Credit card prime from tappay, and order information",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/Order"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 161
+          },
+          "category": {
+            "type": "string",
+            "example": "women"
+          },
+          "title": {
+            "type": "string",
+            "example": "經典修身長筒牛仔褲"
+          },
+          "description": {
+            "type": "string",
+            "example": "厚薄：薄\r\n彈性：無"
+          },
+          "price": {
+            "type": "integer",
+            "example": 1299
+          },
+          "texture": {
+            "type": "string",
+            "example": "棉 100%"
+          },
+          "wash": {
+            "type": "string",
+            "example": "手洗"
+          },
+          "place": {
+            "type": "string",
+            "example": "越南"
+          },
+          "note": {
+            "type": "string",
+            "example": "實品顏色依單品照為主"
+          },
+          "story": {
+            "typw": "string",
+            "example": "O.N.S is all about options, which is why we took our staple polo shirt and upgraded it with slubby linen jersey, making it even lighter for those who prefer their summer style extra-breezy."
+          },
+          "main_image": {
+            "type": "string",
+            "example": "/assets/201902191247/main.jpg"
+          },
+          "images": {
+            "type": "array",
+            "example": [
+              "/assets/201902191247/0.jpg",
+              "/assets/201902191247/1.jpg"
+            ]
+          },
+          "variants": {
+            "type": "array",
+            "example": [
+              {
+                "color_code": "FFFFFF",
+                "size": "S",
+                "stock": 9
+              },
+              {
+                "color_code": "DDF0FF",
+                "size": "M",
+                "stock": 10
+              },
+              {
+                "color_code": "DDF0FF",
+                "size": "L",
+                "stock": 5
+              }
+            ]
+          },
+          "sizes": {
+            "type": "array",
+            "example": ["S", "M", "L"]
+          },
+          "colorsMap": {
+            "type": "object",
+            "example": {
+              "FFFFFF": "白色",
+              "DDF0FF": "淺藍"
+            }
+          },
+          "colors": {
+            "type": "array",
+            "example": [
+              {
+                "code": "FFFFFF",
+                "name": "白色"
+              },
+              {
+                "code": "DDF0FF",
+                "name": "淺藍"
+              }
+            ]
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": "25"
+          },
+          "provider": {
+            "type": "string",
+            "example": "native"
+          },
+          "name": {
+            "type": "string",
+            "example": "Ian"
+          },
+          "email": {
+            "type": "string",
+            "example": "ian@gmail.com"
+          },
+          "picture": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "Campaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 12
+          },
+          "product_id": {
+            "type": "integer",
+            "example": "148"
+          },
+          "story": {
+            "type": "string",
+            "example": "瞬間\r\n在城市的角落\r\n找到失落多時的記憶。\r\n印象《都會故事集》"
+          },
+          "picture": {
+            "type": "string",
+            "example": "/assets/201807202140/keyvisual.jpg"
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "prime": {
+            "type": "string",
+            "example": "ccc1491581661f700bcc1cafec673c741f0665ca77550fe828ef38ee1437a2b8"
+          },
+          "order": {
+            "type": "object",
+            "properties": {
+              "shipping": {
+                "type": "string",
+                "example": "delivery"
+              },
+              "payment": {
+                "type": "string",
+                "example": "credit_card"
+              },
+              "subtotal": {
+                "type": "integer",
+                "example": 1234
+              },
+              "freight": {
+                "type": "integer",
+                "example": 14
+              },
+              "total": {
+                "type": "integer",
+                "example": 1300
+              },
+              "recipient": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Luke"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "0987654321"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "luke@gmail.com"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "市政府站"
+                  },
+                  "time": {
+                    "type": "string",
+                    "example": "morning"
+                  }
+                }
+              },
+              "list": {
+                "type": "array",
+                "example": [
+                  {
+                    "id": 201807202157,
+                    "title": "活力花紋長筒牛仔褲",
+                    "price": 12,
+                    "color": {
+                      "name": "黑色",
+                      "code": "#FFFFFF"
+                    },
+                    "size": "M",
+                    "qty": 1
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "BrowsingHistory": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "integer",
+            "example": "12023-11-02T10:01:00.000Z"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 161
+              },
+              "category": {
+                "type": "string",
+                "example": "women"
+              },
+              "title": {
+                "type": "string",
+                "example": "前開衩扭結洋裝"
+              },
+              "main_image": {
+                "type": "string",
+                "example": "/assets/201902191247/main.jpg"
+              },
+              "price": {
+                "type": "integer",
+                "example": 1500
+              }
+            }
+          }
+        }
+      },
+      "Shop": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "example": 161
+          },
+          "name": {
+            "example": "台北車站館前店"
+          },
+          "lat": {
+            "example": "25.045749558028554"
+          },
+          "lng": {
+            "example": "121.51477021384437"
+          },
+          "address": {
+            "example": "121.51477021384437"
+          },
+          "phone": {
+            "example": "(02)2331-5806"
+          },
+          "open_time": {
+            "example": "11:00"
+          },
+          "close_time": {
+            "example": "22:00"
+          },
+          "stock": {
+            "example": 7
+          }
+        }
+      },
+      "BadRequest-invalid-value": {
+        "type": "string",
+        "example": "query[paging]: Invalid value"
+      },
+      "BadRequest-duplicate-key": {
+        "type": "string",
+        "example": "Duplicate entry 'ian@gmail.com' for key 'users.email'"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "description": "Please enter JWT token",
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Event",
+      "description": "API for SDK sending event information to sever"
+    },
+    {
+      "name": "User",
+      "description": "API for authentication"
+    },
+    {
+      "name": "Analysis",
+      "description": "API for error data analysis"
+    },
+    {
+      "name": "Issue",
+      "description": "API for issue page"
+    },
+    {
+      "name": "Project",
+      "description": "API for project page"
+    }
+  ]
+}
