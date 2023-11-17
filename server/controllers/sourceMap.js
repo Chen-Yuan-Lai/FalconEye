@@ -1,6 +1,8 @@
+import { readFileAsync } from '../utils/fsOperation.js';
+
 const getSourceMap = async (req, res, next) => {
   try {
-    console.log(req.body);
+    console.log(JSON.parse(map));
     res.status(200).json({
       data: 'ok',
     });
