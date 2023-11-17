@@ -36,24 +36,34 @@ class ErrorExporterSDK {
   }
 
   processStack(stack) {
-    console.log(stack);
-    // const stackArr = stack.split('\n').map(el => {
-    //   console.log(el, typeof el);
-    //   console.log(el.trim());
-    // });
-    // const minifiedStackArr = stackArr.map(el => );
+    const trimStacks = error.stack
+      .split('\n')
+      .map(el => el.trim())
+      .filter(el => el.startsWith('at'))
+      .map(el => {
+        const trimStacks = el.split(' ');
+        const trimStack = trimStacks[trimStacks.length - 1];
+        if (trimStack.startsWith('f')) {
+          return trimStack.replace(/file:\/\//g, '');
+        } else {
+          return trimStack.slice(1, trimStack.length - 2);
+        }
+      });
 
-    return stackArr;
+    return trimStacks;
   }
 
   captureError(error, req = null) {
-    // const stack = this.processStack(error.stack);
-    console.log(error.stack);
+    const trimStacks = this.processStack(error.stack);
 
+    const topStackArr = trimStacks[0].split(':');
+    const errorLine = topStackArr[1];
+    const errorColumn = topStackArr[2];
     const errData = {
       message: error.message,
-      // stack,
-      // stack: error.stack,
+      stack: trimStacks,
+      errorLine,
+      errorColumn,
       name: error.name,
       timestamp: new Date().toISOString(),
       systemInfo: this.extractSystemInfo(),
@@ -79,7 +89,7 @@ class ErrorExporterSDK {
 
       return await res.json();
     } catch (err) {
-      console.error('There was a problem with the POST request:', error);
+      console.error('There was a problem with the POST request:', err);
     }
   }
 
