@@ -1,10 +1,17 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { param, query, body } from 'express-validator';
 
-import { getProject, createProject, deleteProject, updateProject } from '../controllers/project.js';
+import handleResult from '../middlewares/validator.js';
+import { getProjects, getProject, createProject, deleteProject } from '../controllers/project.js';
+import authenticate from '../middlewares/authenticate.js';
 
 const router = Router();
 
-router.use('/projects');
+router
+  .route('/projects/:category')
+  .get(param('category').isIn(['all', 'handled', 'unhandled']), getProjects);
+router
+  .route('/project')
+  .post([body('framework').exists().notEmpty().trim(), handleResult, authenticate, createProject]);
 
 export default router;

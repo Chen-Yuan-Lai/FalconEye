@@ -11,6 +11,7 @@ import 'dotenv/config';
 import eventRouter from './routes/event.js';
 import sourceMapRouter from './routes/sourceMap.js';
 import userRouter from './routes/user.js';
+import projectRouter from './routes/project.js';
 
 // read json file
 const rawData = fs.readFileSync('swagger_output.json');
@@ -36,7 +37,7 @@ app.use(cookieParser());
 // static file
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/1.0', [eventRouter, sourceMapRouter, userRouter]);
+app.use('/api/1.0', [eventRouter, sourceMapRouter, userRouter, projectRouter]);
 
 app.use((err, req, res, next) => {
   const error = Object.assign(err);
