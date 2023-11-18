@@ -413,10 +413,6 @@
                           "type": "string",
                           "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI1LCJpYXQiOjE2OTkwODc2MzEsImV4cCI6MTY5OTA5MTIzMX0.Mh16vZAmi_5badOHesHY4RZHkIc3jRmYRvLv5aDC72I"
                         },
-                        "access_expired": {
-                          "type": "integer",
-                          "example": 3600
-                        },
                         "user": {
                           "$ref": "#/components/schemas/User"
                         }
@@ -477,7 +473,7 @@
     "/api/user/signin": {
       "post": {
         "tags": ["User"],
-        "summary": "sign in by facebook",
+        "summary": "sign in by the email and password",
         "description": "check the user information in the database, and return JWT token for autthentication",
         "responses": {
           "200": {
@@ -490,13 +486,9 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "access_token": {
+                        "token": {
                           "type": "string",
                           "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI1LCJpYXQiOjE2OTkwODc2MzEsImV4cCI6MTY5OTA5MTIzMX0.Mh16vZAmi_5badOHesHY4RZHkIc3jRmYRvLv5aDC72I"
-                        },
-                        "access_expired": {
-                          "type": "integer",
-                          "example": 3600
                         },
                         "user": {
                           "$ref": "#/components/schemas/User"
@@ -533,11 +525,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "provider": {
-                    "example": "facebook"
+                  "email": {
+                    "example": "kevin@gmail.com"
                   },
-                  "access_token": {
-                    "exxample": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI1LCJpYXQiOjE2OTkyNTgyMjQsImV4cCI6MTY5OTI2MTgyNH0.v4o5kTVx8PbDKcPSpYIe8VdQbYqHSXazhPy-YdV8XpM"
+                  "password": {
+                    "example": "5678"
                   }
                 }
               }
@@ -937,21 +929,21 @@
             "type": "integer",
             "example": "25"
           },
-          "provider": {
-            "type": "string",
-            "example": "native"
-          },
-          "name": {
+          "first_name": {
             "type": "string",
             "example": "Ian"
+          },
+          "second_name": {
+            "type": "string",
+            "example": "Lai"
           },
           "email": {
             "type": "string",
             "example": "ian@gmail.com"
           },
-          "picture": {
+          "user_key": {
             "type": "string",
-            "example": ""
+            "example": "91741038-2102-4865-97ec-da973f62f601"
           }
         }
       },

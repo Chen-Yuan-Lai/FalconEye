@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_KEY = process.env.JWT_KEY || '';
+const JWT_KEY = process.env.JWT_KEY;
+const EXPIRE_TIME = process.env.EXPIRE_TIME;
 
-export default function signJWT(userId) {
+function signJWT(userId) {
   return new Promise((resolve, reject) => {
-    jwt.sign({ userId }, JWT_KEY, { expiresIn: EXPIRE_TIME }, function (err, token) {
+    jwt.sign({ userId }, JWT_KEY, { expiresIn: EXPIRE_TIME }, (err, token) => {
       if (err) {
         reject(err);
       }
@@ -12,3 +13,5 @@ export default function signJWT(userId) {
     });
   });
 }
+
+export default signJWT;
