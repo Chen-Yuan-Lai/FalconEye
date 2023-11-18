@@ -1,8 +1,6 @@
-import { readFileAsync } from '../utils/fsOperation.js';
-
-const getSourceMap = async (req, res, next) => {
+const createSourceMap = async (req, res, next) => {
   try {
-    console.log(JSON.parse(map));
+    // console.log(JSON.parse(map));
     res.status(200).json({
       data: 'ok',
     });
@@ -12,4 +10,6 @@ const getSourceMap = async (req, res, next) => {
   }
 };
 
-export default getSourceMap;
+const getSourceMap = async (req, res, next) => {};
+
+export default createSourceMap;

@@ -16,27 +16,38 @@ class ErrorExporterSDK {
   }
 
   extractRequestInfo(req) {
+    const { host, 'user-agent': userAgent, accept } = req.headers;
+
     return {
       url: req.originalUrl,
       method: req.method,
-      headers: req.headers,
-      queryParas: req.query,
+      host,
+      userAgent,
+      accept,
+      queryParas: Object.keys(req.query).length || null,
     };
   }
 
   extractSystemInfo() {
+    const { rss, heapTotal, heapUsed, external, arrayBuffers } =
+      process.memoryUsage();
+
     return {
       osType: os.type(),
       osRelease: os.release(),
       architecture: os.arch(),
       nodeVersion: process.version,
-      memoryUsage: process.memoryUsage(),
+      rss,
+      heapTotal,
+      heapUsed,
+      external,
+      arrayBuffers,
       uptime: os.uptime(),
     };
   }
 
   processStack(stack) {
-    const trimStacks = error.stack
+    const trimStacks = stack
       .split('\n')
       .map(el => el.trim())
       .filter(el => el.startsWith('at'))

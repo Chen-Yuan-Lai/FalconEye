@@ -99,9 +99,9 @@
         }
       }
     },
-    "/api/products": {
+    "/api/sourceMap": {
       "get": {
-        "tags": ["Product"],
+        "tags": ["Project"],
         "summary": "Search for all product",
         "description": "return a product list in one page (6 product per page)",
         "parameters": [
@@ -397,7 +397,7 @@
       "post": {
         "tags": ["User"],
         "summary": "sign up the user account",
-        "description": "record the user information in the database, and return JWT token for autthentication",
+        "description": "record the user information in the database, and return JWT token for authentication",
         "responses": {
           "200": {
             "description": "sign up successfully",
@@ -455,8 +455,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": {
+                  "firstName": {
                     "example": "Ian"
+                  },
+                  "secondName": {
+                    "example": "Lai"
                   },
                   "email": {
                     "example": "Ian@gmail.com"
@@ -879,10 +882,7 @@
           },
           "images": {
             "type": "array",
-            "example": [
-              "/assets/201902191247/0.jpg",
-              "/assets/201902191247/1.jpg"
-            ]
+            "example": ["/assets/201902191247/0.jpg", "/assets/201902191247/1.jpg"]
           },
           "variants": {
             "type": "array",

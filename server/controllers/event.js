@@ -1,4 +1,4 @@
-const getEvent = async (req, res, next) => {
+const createEvent = async (req, res, next) => {
   try {
     console.log(req.body);
     res.status(200).json({
@@ -10,4 +10,6 @@ const getEvent = async (req, res, next) => {
   }
 };
 
-export default getEvent;
+const getEvent = async (req, res, next) => {};
+
+export default createEvent;
