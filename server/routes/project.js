@@ -14,4 +14,6 @@ router
   .route('/project')
   .post([body('framework').exists().notEmpty().trim(), handleResult, authenticate, createProject]);
 
+router.route('/project/validation').post();
+
 export default router;

@@ -12,10 +12,21 @@ export const createProject = async (framework, userId) => {
   return res.rows[0];
 };
 
-export const findProject = async clientToken => {
+export const findProject = async column => {
   const query = {
     text: 'SELECT * FROM projects WHERE client_token = $1',
-    values: [clientToken],
+    values: [column],
+  };
+  const res = await pool.query(query);
+  return res.rows[0];
+};
+
+export const checkProject = async (userKey, clientToken) => {
+  const query = {
+    text: `select * FROM users 
+          LEFT JOIN projects ON users.id = projects.user_id 
+          WHERE user_key = $1 AND client_token = $2 `,
+    values: [userKey, clientToken],
   };
   const res = await pool.query(query);
   return res.rows[0];

@@ -14,10 +14,10 @@ export const createUser = async (firstName, secondName, email, password) => {
   return res.rows[0];
 };
 
-export const findUser = async email => {
+export const findUser = async column => {
   const query = {
     text: 'SELECT * FROM users WHERE email = $1',
-    values: [email],
+    values: [column],
   };
   const res = await pool.query(query);
   return res.rows[0];
@@ -26,6 +26,6 @@ export const findUser = async email => {
 export const checkPassword = async (email, password) => {
   const user = await findUser(email);
   const token = user.password;
-
-  return argon2.verify(token, password);
+  const isvalid = await argon2.verify(token, password);
+  return isvalid;
 };
