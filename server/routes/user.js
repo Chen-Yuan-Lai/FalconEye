@@ -19,8 +19,11 @@ router
 
 router
   .route('/user/signin')
-  .post([body('email').isEmail().normalizeEmail(), body('password').exists().notEmpty(), handleResult, signin]);
-
-router.route('/user/validation').post()
+  .post([
+    body('email').isEmail().normalizeEmail(),
+    body('password').exists().notEmpty(),
+    handleResult,
+    signin,
+  ]);
 
 export default router;

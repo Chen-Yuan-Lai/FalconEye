@@ -1,6 +1,7 @@
 const createEvent = async (req, res, next) => {
   try {
-    console.log(req.body);
+    console.log(res.locals.eventData);
+
     res.status(200).json({
       data: 'ok',
     });
