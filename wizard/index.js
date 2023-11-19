@@ -41,11 +41,34 @@ const wizard = async () => {
           return true;
         },
       },
+      {
+        type: "input",
+        name: "userKey",
+        message: "Please enter your user key",
+        validate: (input) => {
+          if (input === "") {
+            return "user key can't be empty";
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        name: "clientToken",
+        message: "Please enter your client token for your project",
+        validate: (input) => {
+          if (input === "") {
+            return "client token can't be empty";
+          }
+          return true;
+        },
+      },
     ];
     const subAns = await inquirer.prompt(subQuestions);
+    const { path, userKey, clientToken } = subAns;
     console.log("generating source map file...");
     await esbuild.build({
-      entryPoints: [subAns.path],
+      entryPoints: [path],
       bundle: true,
       sourcemap: true,
       format: "esm",
@@ -55,12 +78,14 @@ const wizard = async () => {
     console.log("uploading source map file...");
 
     const map = await readFileAsync("./bundle.js.map");
-    await sendSourceMap(map);
+
+    const result = await sendSourceMap(map, userKey, clientToken);
     // await deleteFileAsync("./bundle.js");
     // await deleteFileAsync("./bundle.js.map");
-    console.log("Done!");
+    console.log(result.data);
   } catch (err) {
-    console.error(err);
+    console.error(err.message);
+    process.exit();
   }
 };
 
