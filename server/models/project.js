@@ -23,7 +23,7 @@ export const findProject = async column => {
 
 export const checkProject = async (userKey, clientToken) => {
   const query = {
-    text: `select * FROM users 
+    text: `select users.id as user_id, projects.id as project_id  FROM users 
           LEFT JOIN projects ON users.id = projects.user_id 
           WHERE user_key = $1 AND client_token = $2 `,
     values: [userKey, clientToken],

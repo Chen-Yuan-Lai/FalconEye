@@ -1,10 +1,34 @@
 import { Router } from 'express';
 import createSourceMap from '../controllers/sourceMap.js';
-import uploadToDisk from '../middlewares/savaMapToDisk.js';
-import checkDSN from '../middlewares/checkDSN.js';
+import parseDSN from '../middlewares/parseDSN.js';
+import branch from '../middlewares/branch.js';
+import {
+  uploadToMemory,
+  uploadToS3,
+  checkSourceMapExisted,
+  checkSourceMapVersion,
+} from '../middlewares/upload.js';
 
 const router = Router();
 
-router.route('/sourceMap').post(checkDSN, uploadToDisk, createSourceMap);
+router.route('/sourceMap').post([
+  uploadToMemory.single('map'),
+  parseDSN,
+  checkSourceMapExisted,
+  branch(
+    req => req.body.newestMap,
+    [
+      checkSourceMapVersion,
+      branch(
+        req => req.body.isSame,
+        (req, res) => {
+          res.status(200).json({ data: 'source map file already has the newest version' });
+        },
+        [uploadToS3, createSourceMap],
+      ),
+    ],
+    [uploadToS3, createSourceMap],
+  ),
+]);
 
 export default router;

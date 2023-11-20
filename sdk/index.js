@@ -2,10 +2,17 @@ import os from 'os';
 
 class ErrorExporterSDK {
   constructor() {
-    this.host = 'http://localhost:3000';
+    this.validate = false;
+    this.API_HOST = 'http://localhost:3000';
+    this.EVENT_ENDPOINT = '/api/1.0/event';
+    this.VALIDATION_ENDPOINT = '/api/1.0/validate';
   }
 
-  init() {
+  async init(options = {}) {
+    this.userKey = options.userKey;
+    this.clientToken = options.clientToken;
+    await this.validateSDK();
+    console.log('initialize SDK successfully');
     process.on('uncaughtException', error => {
       this.captureError(error);
     });
@@ -46,61 +53,74 @@ class ErrorExporterSDK {
     };
   }
 
-  processStack(stack) {
-    const trimStacks = stack
-      .split('\n')
-      .map(el => el.trim())
-      .filter(el => el.startsWith('at'))
-      .map(el => {
-        const trimStacks = el.split(' ');
-        const trimStack = trimStacks[trimStacks.length - 1];
-        if (trimStack.startsWith('f')) {
-          return trimStack.replace(/file:\/\//g, '');
-        } else {
-          return trimStack.slice(1, trimStack.length - 2);
-        }
-      });
-
-    return trimStacks;
-  }
-
   captureError(error, req = null) {
-    const trimStacks = this.processStack(error.stack);
-
-    const topStackArr = trimStacks[0].split(':');
-    const errorLine = topStackArr[1];
-    const errorColumn = topStackArr[2];
     const errData = {
       message: error.message,
-      stack: trimStacks,
-      errorLine,
-      errorColumn,
+      stack: error.stack,
       name: error.name,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toUTCString(),
       systemInfo: this.extractSystemInfo(),
       requestInfo: req ? req.reqInfo : null,
     };
-
-    this.sendError(errData);
+    if (this.validate) {
+      this.sendError(errData);
+    }
   }
 
   async sendError(errorData) {
     try {
-      const res = await fetch(`${this.host}/api/1.0/event`, {
+      const content = {
+        userKey: this.userKey,
+        clientToken: this.clientToken,
+        errorData,
+      };
+      const res = await fetch(`${this.API_HOST}${this.EVENT_ENDPOINT}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(errorData),
+        body: JSON.stringify(content),
       });
 
       if (!res.ok && `${res.status}`.startsWith('4')) {
-        throw new Error('Network response was not ok');
+        const errorMessage = await res.text();
+        const msg = JSON.parse(errorMessage);
+        throw new Error(`Error ${res.status}: ${msg.data}`);
       }
-
       return await res.json();
     } catch (err) {
-      console.error('There was a problem with the POST request:', err);
+      console.error(err.message);
+    }
+  }
+
+  async validateSDK() {
+    try {
+      if (!this.userKey || !this.clientToken) {
+        throw new Error("user key and client token can't be empty");
+      }
+
+      const content = {
+        userKey: this.userKey,
+        clientToken: this.clientToken,
+      };
+
+      const res = await fetch(`${this.API_HOST}${this.VALIDATION_ENDPOINT}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(content),
+      });
+
+      if (!res.ok && `${res.status}`.startsWith('4')) {
+        const errorMessage = await res.text();
+        const msg = JSON.parse(errorMessage);
+        throw new Error(`Failed to initialize SDK: ${msg.data}`);
+      }
+      this.validate = true;
+      return await res.json();
+    } catch (err) {
+      console.error(err.message);
     }
   }
 

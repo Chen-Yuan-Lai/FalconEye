@@ -1,14 +1,15 @@
 import * as ProjectModel from '../models/project.js';
 import AppError from '../utils/appError.js';
 
-const checkDSN = async (req, res, next) => {
+const parseDSN = async (req, res, next) => {
   try {
     const { userKey, clientToken } = req.body;
-    const project = await ProjectModel.checkProject(userKey, clientToken);
-    if (!project) {
+    const ids = await ProjectModel.checkProject(userKey, clientToken);
+    if (!ids) {
       return next(new AppError('invalid userKey or clientToken', 400));
     }
-    res.locals.projectId = project.id;
+    res.locals.projectId = ids.project_id;
+    res.locals.userId = ids.user_id;
     next();
   } catch (err) {
     console.error(err);
@@ -16,4 +17,4 @@ const checkDSN = async (req, res, next) => {
   }
 };
 
-export default checkDSN;
+export default parseDSN;

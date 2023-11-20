@@ -1,25 +1,20 @@
 import * as argon2 from 'argon2';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import AppError from '../utils/appError.js';
 import * as sourceMapModel from '../models/sourceMap.js';
+import s3 from '../utils/S3.js';
 
 const createSourceMap = async (req, res, next) => {
   try {
-    const { path, projectId, newestMap } = res.locals;
-    const { map } = req.body;
-    const hashValue = await argon2.hash(JSON.stringify(map));
+    const { version, fileName, comingMap } = req.body;
 
-    let updatedMap;
-    // if the project has no map, create a new one
-    if (!newestMap) {
-      updatedMap = await sourceMapModel.createSourceMap(path, projectId, hashValue, 1);
-    } else {
-      // the map has updated, create a new version
-      const newVersion = newestMap.version + 1;
-      updatedMap = await sourceMapModel.createSourceMap(path, projectId, hashValue, newVersion);
-    }
+    const { projectId } = res.locals;
+    const hashValue = await argon2.hash(comingMap);
+
+    const result = await sourceMapModel.createSourceMap(fileName, projectId, hashValue, version);
 
     res.status(200).json({
-      data: updatedMap,
+      data: result,
     });
   } catch (err) {
     console.error(err);
@@ -27,6 +22,31 @@ const createSourceMap = async (req, res, next) => {
   }
 };
 
-const getSourceMap = async (req, res, next) => {};
+const getSourceMap = async (req, res, next) => {
+  try {
+    const { projectId } = req.body;
+
+    const mapData = await sourceMapModel.findSourceMap(projectId);
+
+    if (!mapData) {
+      return next(new AppError('source map not found', 404));
+    }
+    const { path } = mapData;
+
+    const bucketName = process.env.S3_BUCKET_NAME;
+    const params = {
+      Bucket: bucketName,
+      Key: path,
+    };
+    const command = new GetObjectCommand(params);
+    const response = await s3.send(command);
+    const mapStr = await response.Body.transformToString();
+
+    const mapObj = JSON.parse(mapStr);
+  } catch (err) {
+    console.error(err);
+    next();
+  }
+};
 
 export default createSourceMap;
