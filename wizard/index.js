@@ -3,6 +3,7 @@ import esbuild from "esbuild";
 import inquirer from "inquirer";
 import { readFileAsync, deleteFileAsync } from "./fsOperation.js";
 import sendSourceMap from "./sendSourceMap.js";
+import validate from "./validate.js";
 
 const wizard = async () => {
   try {
@@ -66,6 +67,9 @@ const wizard = async () => {
     ];
     const subAns = await inquirer.prompt(subQuestions);
     const { path, userKey, clientToken } = subAns;
+    console.log("validating user key and client token...");
+    await validate(userKey, clientToken);
+
     console.log("generating source map file...");
     await esbuild.build({
       entryPoints: [path],
@@ -76,7 +80,6 @@ const wizard = async () => {
       outfile: "./bundle.js",
     });
     console.log("uploading source map file...");
-
     const map = await readFileAsync("./bundle.js.map");
 
     const result = await sendSourceMap(map, userKey, clientToken);
@@ -84,7 +87,7 @@ const wizard = async () => {
     // await deleteFileAsync("./bundle.js.map");
     console.log(result.data);
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
     process.exit();
   }
 };

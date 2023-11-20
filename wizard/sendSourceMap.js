@@ -6,29 +6,22 @@ const sendSourceMap = async (map, userKey, clientToken) => {
     throw new Error("Missing required parameters");
   }
 
-  let parsedMap;
-  try {
-    parsedMap = JSON.parse(map);
-  } catch (error) {
-    throw new Error("Invalid JSON in map");
-  }
-
-  const content = {
-    map: parsedMap,
-    userKey,
-    clientToken,
-  };
+  // send multi-form request
+  const formData = new FormData();
+  // The contentType is set to application/octet-stream, which is a generic binary stream.
+  const blob = new Blob([map]);
+  formData.append("map", blob, "bundle.js.map");
+  formData.append("userKey", userKey);
+  formData.append("clientToken", clientToken);
   const res = await fetch(`${API_HOST}${SOURCE_MAP_ENDPOINT}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(content),
+    body: formData,
   });
 
-  if (!res.ok) {
-    const errorMessage = await response.text();
-    throw new Error(`Error ${response.status}: ${errorMessage}`);
+  if (!res.ok && `${res.status}`.startsWith("4")) {
+    const errorMessage = await res.text();
+    const msg = JSON.parse(errorMessage);
+    throw new Error(`Failed to upload source map: ${msg.data}`);
   }
 
   return await res.json();
