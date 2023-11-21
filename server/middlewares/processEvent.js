@@ -1,20 +1,25 @@
+import argon2 from 'argon2';
 import AppError from '../utils/appError.js';
+import genHash from '../utils/hash.js';
 
-const trimError = async (req, res, next) => {
+const processEvent = async (req, res, next) => {
   try {
     // process error stack
-    const { stack, ...errorData } = req.body;
+    const { errorData } = req.body;
+    const { stack, ...other } = errorData;
     const stripedStack = stack
       .replace(/^.*[\\/]node_modules[\\/].*$/gm, '')
       .replace(/^.*node.*$/gm, '')
-      .match(/at.*file:\/\/[^ ]+/g)
+      .replace(errorData.workspacePath, '')
+      .split('\n')
+      .map(el => el.trim())
       ?.join('\n')
       .replace(/at.*file:\/\//g, '')
       .replace(/\n+/g, '\n');
 
     const stackObjs = [];
     stripedStack.split('\n').forEach(el => {
-      if (el !== '') {
+      if (el !== '' && el.startsWith('/')) {
         const trimStack = el.replace(/^.*\//gm, '').split(':');
         stackObjs.push({
           fileName: trimStack[0],
@@ -23,12 +28,18 @@ const trimError = async (req, res, next) => {
         });
       }
     });
+
+    // generate fingerprints
+    // const fingerprints = await argon2.hash(stripedStack.replace(/:[0-9]*:[0-9]*/gm, ''));
+    const fingerprints = genHash(stripedStack.replace(/:[0-9]*:[0-9]*/gm, ''));
+
     const eventData = {
-      ...errorData,
+      ...other,
+      fingerprints,
       stack: stripedStack,
       stackObjs,
     };
-    res.locals.eventData = eventData;
+    req.body.eventData = eventData;
     next();
   } catch (err) {
     console.error(err);
@@ -36,4 +47,4 @@ const trimError = async (req, res, next) => {
   }
 };
 
-export default trimError;
+export default processEvent;
