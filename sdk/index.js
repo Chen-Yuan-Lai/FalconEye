@@ -55,6 +55,7 @@ class ErrorExporterSDK {
 
   captureError(error, req = null) {
     const errData = {
+      workspacePath: process.cwd(),
       message: error.message,
       stack: error.stack,
       name: error.name,
