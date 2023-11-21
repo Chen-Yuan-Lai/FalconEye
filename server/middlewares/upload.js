@@ -8,6 +8,7 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import s3 from '../utils/S3.js';
 import AppError from '../utils/appError.js';
 import * as sourceMapModel from '../models/sourceMap.js';
+import genHash from '../utils/hash.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,7 +80,7 @@ export const checkSourceMapVersion = async (req, res, next) => {
   try {
     const { newestMap, comingMap } = req.body;
 
-    const isSame = await argon2.verify(newestMap.hash_value, comingMap);
+    const isSame = newestMap.hash_value === genHash(comingMap);
     req.body.newestMap = '';
     if (!isSame) req.body.version += newestMap.version;
     req.body.isSame = isSame;

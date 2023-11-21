@@ -3,13 +3,14 @@ import { GetObjectCommand } from '@aws-sdk/client-s3';
 import AppError from '../utils/appError.js';
 import * as sourceMapModel from '../models/sourceMap.js';
 import s3 from '../utils/S3.js';
+import genHash from '../utils/hash.js';
 
 const createSourceMap = async (req, res, next) => {
   try {
     const { version, fileName, comingMap } = req.body;
 
     const { projectId } = res.locals;
-    const hashValue = await argon2.hash(comingMap);
+    const hashValue = genHash(comingMap);
 
     const result = await sourceMapModel.createSourceMap(fileName, projectId, hashValue, version);
 
