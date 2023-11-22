@@ -4,7 +4,7 @@ import * as sourceMapModel from '../models/sourceMap.js';
 import * as eventModel from '../models/event.js';
 import s3 from '../utils/S3.js';
 
-const createEvent = async (req, res, next) => {
+export const createEvent = async (req, res, next) => {
   try {
     const { projectId, userId } = res.locals;
     const {
@@ -119,6 +119,16 @@ const createEvent = async (req, res, next) => {
   }
 };
 
-const getEvent = async (req, res, next) => {};
+export const getEventByUserId = async (req, res, next) => {
+  try {
+    const event = await eventModel.getEventByUserId(res.locals.userId);
 
-export default createEvent;
+    res.status(200).json({
+      status: 'get event successfully',
+      data: event,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};

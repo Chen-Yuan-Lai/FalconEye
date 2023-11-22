@@ -13,7 +13,7 @@ const authenticate = async (req, res, next) => {
     next();
   } catch (err) {
     if (err instanceof Error) {
-      res.status(401).json({ errors: err.message });
+      res.status(401).json({ errors: err });
       return;
     }
     res.status(401).json({ errors: 'authenticate failed' });

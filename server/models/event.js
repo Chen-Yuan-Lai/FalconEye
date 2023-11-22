@@ -101,4 +101,12 @@ export const createRequestInfo = async (
   return res.rows[0];
 };
 
-export const getEvent = id => {};
+export const getEventByUserId = async userId => {
+  const query = {
+    text: 'SELECT * FROM events WHERE user_id = $1',
+    values: [userId],
+  };
+
+  const res = await pool.query(query);
+  return res.rows;
+};
