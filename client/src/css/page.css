@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.login {
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0px 8px 32px 0 rgba(74, 43, 104, 0.33);
+  backdrop-filter: blur(3px);
+  border-radius: 16px;
+  padding: 10px 16px 16px 16px;
+}

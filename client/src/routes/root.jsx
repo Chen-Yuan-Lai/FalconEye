@@ -1,21 +1,37 @@
 import React, { useState } from "react";
-import { useLoaderData, Outlet, useParams } from "react-router-dom";
-import { Layout, Menu, theme, Button } from "antd";
+import { useLoaderData, Outlet, useParams, redirect } from "react-router-dom";
+import { Layout, Menu, theme, Button, Avatar } from "antd";
 import {
-  AppstoreOutlined,
-  BarChartOutlined,
-  TeamOutlined,
-  UserOutlined,
+  FolderViewOutlined,
+  AlertOutlined,
+  AreaChartOutlined,
+  ContainerOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 
-// import { getCampaign, getProducts } from "../utils/fetchData.js";
+import { getUser } from "../utils/fetchData.js";
 
-export async function loader({ params }) {}
+export async function loader() {
+  try {
+    const jwt = localStorage.getItem("jwt");
+    const userRes = await getUser(jwt);
+    const { user } = userRes.data;
+    // const eventsRes = await getEvents(user.id);
+    // const events = eventsRes.data.events || [];
+    return user;
+  } catch (err) {
+    alert("Please sign in first");
+    return redirect("/signin");
+  }
+}
 
 function getItem(label, key, icon, children, type) {
+  const iconWithClass = React.cloneElement(icon, {
+    className: "!text-xl mr-3",
+  });
   return {
     key,
-    icon,
+    icon: iconWithClass,
     children,
     label,
     type,
@@ -23,23 +39,22 @@ function getItem(label, key, icon, children, type) {
 }
 
 const items = [
-  getItem("Issue", "1", <UserOutlined />),
-  getItem("Project", "2", <AppstoreOutlined />),
-  getItem("Stat", "3", <BarChartOutlined />),
-  getItem("Alert", "4", <UserOutlined />),
-  getItem("Setting", "5", <TeamOutlined />),
+  getItem("Issues", "1", <ContainerOutlined />),
+  getItem("Projects", "2", <FolderViewOutlined />),
+  getItem("Stat", "3", <AreaChartOutlined />),
+  getItem("Alerts", "4", <AlertOutlined />),
+  getItem("Setting", "5", <SettingOutlined />),
 ];
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Sider } = Layout;
 
 export default function Root() {
   const [collapsed, setCollapsed] = useState(false);
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
+
+  const user = useLoaderData();
   return (
     <Layout hasSider>
       <Sider
@@ -49,46 +64,30 @@ export default function Root() {
         style={{
           overflow: "auto",
           height: "100vh",
+          position: "fixed",
           left: 0,
           top: 0,
           bottom: 0,
         }}
       >
         <div className="demo-logo-vertical" />
+        <Avatar
+          shape="square"
+          size={48}
+          className="bg-[#fde3cf] text-[#f56a00] ml-4 my-5 font-medium !text-[30px]"
+        >
+          {user.first_name[0]}
+        </Avatar>
         <Menu
+          className="!text-[16px]"
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["4"]}
+          defaultSelectedKeys={["1"]}
           defaultOpenKeys={["sub1"]}
           items={items}
         />
       </Sider>
-      <Layout className="site-layout">
-        <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-            textAlign: "left",
-          }}
-        >
-          <h1>Issue</h1>
-        </Header>
-        <Content
-          style={{ margin: "24px 16px 0", background: colorBgContainer }}
-        >
-          <div
-            style={{
-              padding: 24,
-              textAlign: "center",
-              background: colorBgContainer,
-            }}
-          ></div>
-          <p>long content</p>
-        </Content>
-        <Footer style={{ textAlign: "center" }}>
-          Ant Design ©2023 Created by Ant UED
-        </Footer>
-      </Layout>
+      <Outlet />
     </Layout>
   );
 }
