@@ -2,7 +2,7 @@ import signJWT from '../utils/signJWT.js';
 import * as UserModel from '../models/user.js';
 import AppError from '../utils/appError.js';
 
-const signup = async (req, res, next) => {
+export const signup = async (req, res, next) => {
   try {
     const { firstName, secondName, email, password } = req.body;
     const existed = await UserModel.findUser(email);
@@ -27,7 +27,7 @@ const signup = async (req, res, next) => {
   }
 };
 
-const signin = async (req, res, next) => {
+export const signin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await UserModel.findUser(email);
@@ -57,4 +57,20 @@ const signin = async (req, res, next) => {
   }
 };
 
-export { signin, signup };
+export const getUser = async (req, res, next) => {
+  try {
+    const { userId } = res.locals;
+    const user = await UserModel.findUserById(userId);
+    if (!user) {
+      return next(new AppError('user not found', 404));
+    }
+    res.status(200).json({
+      data: {
+        user,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};

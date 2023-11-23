@@ -8,8 +8,8 @@ const parseDSN = async (req, res, next) => {
     if (!ids) {
       return next(new AppError('invalid userKey or clientToken', 400));
     }
-    res.locals.projectId = ids.project_id;
-    res.locals.userId = ids.user_id;
+    res.locals.projectId = +ids.project_id;
+    res.locals.userId = +ids.user_id;
     next();
   } catch (err) {
     console.error(err);

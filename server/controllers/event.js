@@ -92,7 +92,7 @@ export const createEvent = async (req, res, next) => {
 
     let requestInfoResult = {};
     if (requestInfo) {
-      const { url, method, host, userAgent, accept, queryParas } = requestInfo;
+      const { url, method, host, userAgent, accept, queryParas, ip } = requestInfo;
       requestInfoResult = await eventModel.createRequestInfo(
         event.id,
         url,
@@ -101,6 +101,7 @@ export const createEvent = async (req, res, next) => {
         userAgent,
         accept,
         JSON.stringify(queryParas),
+        ip,
       );
     }
     const data = {
@@ -119,13 +120,14 @@ export const createEvent = async (req, res, next) => {
   }
 };
 
-export const getEventByUserId = async (req, res, next) => {
+export const getEventsByUserId = async (req, res, next) => {
   try {
-    const event = await eventModel.getEventByUserId(res.locals.userId);
+    const { userId } = res.locals;
+    const events = await eventModel.getEventByUserId(userId);
 
     res.status(200).json({
-      status: 'get event successfully',
-      data: event,
+      status: 'get events successfully',
+      data: events,
     });
   } catch (err) {
     console.error(err);

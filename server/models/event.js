@@ -91,10 +91,11 @@ export const createRequestInfo = async (
   userAgent,
   accept,
   queryParas,
+  ip,
 ) => {
   const query = {
-    text: 'INSERT INTO request_info(event_id, url, method, host, useragent, accept, query_paras) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-    values: [eventId, url, method, host, userAgent, accept, queryParas],
+    text: 'INSERT INTO request_info(event_id, url, method, host, useragent, accept, query_paras, ip) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+    values: [eventId, url, method, host, userAgent, accept, queryParas, ip],
   };
 
   const res = await pool.query(query);

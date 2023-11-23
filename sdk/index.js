@@ -26,6 +26,7 @@ class ErrorExporterSDK {
     const { host, 'user-agent': userAgent, accept } = req.headers;
 
     return {
+      ip: req.ip,
       url: req.originalUrl,
       method: req.method,
       host,

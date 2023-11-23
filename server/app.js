@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import fs from 'fs';
 import morgan from 'morgan';
+import compression from 'compression';
 import path, { dirname } from 'path';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'node:url';
@@ -22,6 +23,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = 3000;
 
+app.enable('trust proxy');
+
 app.use(morgan('dev'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 
@@ -35,6 +38,8 @@ app.use(cookieParser());
 
 // static file
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(compression());
 
 app.use('/api/1.0', [eventRouter, sourceMapRouter, userRouter, projectRouter, validateRouter]);
 

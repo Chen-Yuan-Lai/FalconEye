@@ -14,10 +14,19 @@ export const createUser = async (firstName, secondName, email, password) => {
   return res.rows[0];
 };
 
-export const findUser = async column => {
+export const findUser = async email => {
   const query = {
     text: 'SELECT * FROM users WHERE email = $1',
-    values: [column],
+    values: [email],
+  };
+  const res = await pool.query(query);
+  return res.rows[0];
+};
+
+export const findUserById = async userId => {
+  const query = {
+    text: 'SELECT * FROM users WHERE id = $1',
+    values: [userId],
   };
   const res = await pool.query(query);
   return res.rows[0];

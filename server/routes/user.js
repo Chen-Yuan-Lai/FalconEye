@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 
 import handleResult from '../middlewares/validator.js';
-import { signup, signin } from '../controllers/user.js';
+import authenticate from '../middlewares/authenticate.js';
+import { signup, signin, getUser } from '../controllers/user.js';
 
 const router = Router();
 
@@ -25,5 +26,7 @@ router
     handleResult,
     signin,
   ]);
+
+router.route('/user/userProfile').get(authenticate, getUser);
 
 export default router;

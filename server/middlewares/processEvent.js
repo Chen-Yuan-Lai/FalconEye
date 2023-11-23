@@ -1,4 +1,3 @@
-import argon2 from 'argon2';
 import AppError from '../utils/appError.js';
 import genHash from '../utils/hash.js';
 
