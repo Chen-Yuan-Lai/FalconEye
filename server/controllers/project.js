@@ -1,7 +1,6 @@
 import * as ProjectModel from '../models/project.js';
 import AppError from '../utils/appError.js';
 
-export const getProjects = (req, res, next) => {};
 export const getProject = (req, res, next) => {};
 
 export const createProject = async (req, res, next) => {
@@ -21,6 +20,21 @@ export const createProject = async (req, res, next) => {
   }
 };
 
+export const getProjects = async (req, res, next) => {
+  try {
+    const { userId } = res.locals;
+    const projects = await ProjectModel.getProjectsByMembers(userId);
+    res.status(200).json({
+      data: projects,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+// todo
 export const updateProject = (req, res, next) => {};
 
+//  todo
 export const deleteProject = (req, res, next) => {};

@@ -7,9 +7,7 @@ import authenticate from '../middlewares/authenticate.js';
 
 const router = Router();
 
-router
-  .route('/projects/:category')
-  .get(param('category').isIn(['all', 'handled', 'unhandled']), getProjects);
+router.route('/projects').get(authenticate, getProjects);
 router
   .route('/project')
   .post([body('framework').exists().notEmpty().trim(), handleResult, authenticate, createProject]);

@@ -25,8 +25,8 @@ export const createEvent = async (
           user_id, 
           project_id,
           name,
-          stack,
           message,
+          stack,
           os_type,
           os_release,
           architecture,
@@ -76,7 +76,14 @@ export const createCodeBlock = async (
   errorLineNum,
 ) => {
   const query = {
-    text: 'INSERT INTO code_blocks(event_id, file_name, block, error_line, error_column_num, error_line_num) VALUES($1, $2, $3, $4, $5, $6) RETURNING *',
+    text: `INSERT INTO code_blocks(
+              event_id,
+              file_name,
+              block,
+              error_line,
+              error_column_num,
+              error_line_num) 
+              VALUES($1, $2, $3, $4, $5, $6) RETURNING *`,
     values: [eventId, fileName, block, errorLine, errorColumnNum, errorLineNum],
   };
 
@@ -102,12 +109,32 @@ export const createRequestInfo = async (
   return res.rows[0];
 };
 
-export const getEventByUserId = async userId => {
+export const updateEvents = async (eventIds, status) => {
+  const ids = eventIds.map((el, i) => `$${i + 2}`).join(', ');
   const query = {
-    text: 'SELECT * FROM events WHERE user_id = $1',
+    text: `UPDATE 
+    events 
+    SET 
+    status = $1
+    WHERE
+    id IN (${ids})
+    `,
+    values: [status, ...eventIds],
+  };
+  const res = await pool.query(query);
+  return res.rows[0];
+};
+
+// tag 之後會修改
+export const getEventsByIssue = async (eventIds, queryParams) => {
+  const query = {
+    text: `SELECT 
+              *
+          FROM events
+          WHERE id IN ($1)
+          `,
     values: [userId],
   };
-
   const res = await pool.query(query);
   return res.rows;
 };

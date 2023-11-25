@@ -13,6 +13,7 @@ import sourceMapRouter from './routes/sourceMap.js';
 import userRouter from './routes/user.js';
 import projectRouter from './routes/project.js';
 import validateRouter from './routes/validation.js';
+import issueRouter from './routes/issue.js';
 
 // read json file
 const rawData = fs.readFileSync('swagger_output.json');
@@ -41,7 +42,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(compression());
 
-app.use('/api/1.0', [eventRouter, sourceMapRouter, userRouter, projectRouter, validateRouter]);
+app.use('/api/1.0', [
+  eventRouter,
+  sourceMapRouter,
+  userRouter,
+  projectRouter,
+  validateRouter,
+  issueRouter,
+]);
 
 app.use((err, req, res, next) => {
   const error = Object.assign(err);
