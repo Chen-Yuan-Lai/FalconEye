@@ -5,7 +5,7 @@ import AppError from '../utils/appError.js';
 export const signup = async (req, res, next) => {
   try {
     const { firstName, secondName, email, password } = req.body;
-    const existed = await UserModel.findUser(email);
+    const existed = await UserModel.findUserByEmail(email);
 
     if (existed) {
       return next(new AppError('user already existed!', 400));
@@ -30,7 +30,7 @@ export const signup = async (req, res, next) => {
 export const signin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await UserModel.findUser(email);
+    const user = await UserModel.findUserByEmail(email);
 
     if (!user) {
       return next(new AppError('user not existed!', 400));

@@ -14,7 +14,7 @@ export const createUser = async (firstName, secondName, email, password) => {
   return res.rows[0];
 };
 
-export const findUser = async email => {
+export const findUserByEmail = async email => {
   const query = {
     text: 'SELECT * FROM users WHERE email = $1',
     values: [email],
@@ -33,7 +33,7 @@ export const findUserById = async userId => {
 };
 
 export const checkPassword = async (email, password) => {
-  const user = await findUser(email);
+  const user = await findUserByEmail(email);
   const token = user.password;
   const isvalid = await argon2.verify(token, password);
   return isvalid;

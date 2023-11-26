@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import pool from './databasePool.js';
+import format from 'pg-format';
 
 export const createProject = async (framework, userId) => {
   const uuid = uuidv4();
@@ -17,6 +18,31 @@ export const createProject = async (framework, userId) => {
   return res.rows[0];
 };
 
+export const checkProject = async (userKey, clientToken) => {
+  const query = {
+    text: `SELECT
+              users.id AS user_id,
+              projects.id AS project_id 
+          FROM users 
+          LEFT JOIN 
+              projects ON users.id = projects.user_id 
+          WHERE user_key = $1
+                AND client_token = $2`,
+    values: [userKey, clientToken],
+  };
+  const res = await pool.query(query);
+  return res.rows[0];
+};
+
+export const deleteProject = async projectId => {
+  const query = {
+    text: `DELETE FROM projects WHERE id = $1`,
+    values: [projectId],
+  };
+  const res = await pool.query(query);
+  return res;
+};
+
 export const findProject = async clientToken => {
   const query = {
     text: 'SELECT * FROM projects WHERE client_token = $1',
@@ -26,46 +52,92 @@ export const findProject = async clientToken => {
   return res.rows[0];
 };
 
-export const addProjectMember = async (userId, projectId) => {
+export const checkMemberByProjectId = async (userId, projectId) => {
   const query = {
-    text: `UPDATE projects SET members = ARRAY_APPEND(members, $1) WHERE id = $2`,
+    text: `SELECT
+              *
+          FROM 
+              projects
+          WHERE 
+              $1 = ANY(members)
+              AND id = $2`,
     values: [userId, projectId],
   };
   const res = await pool.query(query);
   return res.rows[0];
 };
 
-export const deleteProjectMember = async userId => {
+export const updateProjectMember = async (userId, projectId, action) => {
+  const arrFun = action === 'add' ? 'ARRAY_APPEND' : 'ARRAY_REMOVE';
+  const queryStr = format(`UPDATE projects SET members = %s(members, $1) WHERE id = $2`, arrFun);
   const query = {
-    text: `UPDATE projects SET members = ARRAY_REMOVE(members, $1)`,
-    values: [userId],
+    text: queryStr,
+    values: [userId, projectId],
   };
   const res = await pool.query(query);
   return res.rows[0];
 };
 
-export const checkProject = async (userKey, clientToken) => {
-  const query = {
-    text: `SELECT users.id AS user_id, projects.id AS project_id  FROM users 
-          LEFT JOIN projects ON users.id = projects.user_id 
-          WHERE user_key = $1 AND client_token = $2 `,
-    values: [userKey, clientToken],
-  };
-  const res = await pool.query(query);
-  return res.rows[0];
-};
-
-// TODO 可能不會用到的model function
 export const getProjectsByMembers = async userId => {
   const query = {
-    text: `SELECT * FROM projects WHERE $1 = ANY(members)`,
+    text: `SELECT
+              p.*,
+              COUNT(e.id) AS errors
+          FROM 
+              projects AS p
+          LEFT JOIN
+              events AS e ON e.project_id = p.id 
+          WHERE 
+              $1 = ANY(members)
+          GROUP BY
+              p.id`,
     values: [userId],
   };
   const res = await pool.query(query);
   return res.rows;
 };
 
-// todo
+export const getProject = async projectId => {
+  const query = {
+    text: 'SELECT * FROM projects WHERE id = $1',
+    values: [projectId],
+  };
+
+  const res = await pool.query(query);
+  return res.rows[0];
+};
+
+// todo 參數以小時為單位
+export const getErrorsPerHoursByProjectId = async (projectId, bin, interval) => {
+  const queryStr = format(
+    `SELECT
+        TO_CHAR(series.hour, 'MM-DD HH24:MI') || '-' || TO_CHAR((series.hour + INTERVAL %L), 'HH24:MI') AS hourly_interval,
+        COALESCE(COUNT(e.id), 0) AS event_count
+      FROM 
+        (SELECT generate_series(NOW() - INTERVAL %L, NOW() - interval %L, %L) AS hour) AS series
+      LEFT JOIN
+        events AS e ON e.created_at >= series.hour
+        AND e.created_at < series.hour + INTERVAL %L
+        AND e.project_id = $1          
+      GROUP BY
+        series.hour
+      ORDER BY
+        series.hour`,
+    bin,
+    interval,
+    bin,
+    bin,
+    bin,
+  );
+
+  const query = {
+    text: queryStr,
+    values: [projectId],
+  };
+  const res = await pool.query(query);
+  return res.rows;
+};
+
 export const getIssues = async (userId, queryParams) => {
   let i = 2;
   let project = '';
@@ -111,9 +183,9 @@ export const getIssues = async (userId, queryParams) => {
                     FROM 
                       projects AS p 
                     INNER JOIN 
-                      events as e on e.project_id = p.id
+                      events AS e ON e.project_id = p.id
                     INNER JOIN 
-                      request_info as r on r.event_id = e.id 
+                      request_info AS r ON r.event_id = e.id 
                     WHERE 
                       $1 = ANY(p.members)
                       ${project}
