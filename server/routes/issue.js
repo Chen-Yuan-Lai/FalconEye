@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { query, body } from 'express-validator';
-import { getIssues, updateIssue } from '../controllers/issue.js';
+import { getIssues, updateIssue, getEventsByIssue } from '../controllers/issue.js';
 import authenticate from '../middlewares/authenticate.js';
 import handleResult from '../middlewares/validator.js';
 
@@ -22,7 +22,7 @@ router
 // mark 寫swagger doc
 router
   .route('/issue')
-  .get(authenticate)
+  .get(authenticate, getEventsByIssue)
   .patch([
     authenticate,
     body('eventIds').exists().notEmpty(),

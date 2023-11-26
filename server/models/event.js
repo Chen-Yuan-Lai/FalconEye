@@ -113,11 +113,11 @@ export const updateEvents = async (eventIds, status) => {
   const ids = eventIds.map((el, i) => `$${i + 2}`).join(', ');
   const query = {
     text: `UPDATE 
-    events 
-    SET 
-    status = $1
-    WHERE
-    id IN (${ids})
+              events 
+          SET 
+              status = $1
+          WHERE
+              id IN (${ids})
     `,
     values: [status, ...eventIds],
   };
@@ -125,16 +125,57 @@ export const updateEvents = async (eventIds, status) => {
   return res.rows[0];
 };
 
-// tag 之後會修改
-export const getEventsByIssue = async (eventIds, queryParams) => {
+export const getEventsByIssue = async queryParams => {
+  let { id: eventIds } = queryParams;
+  let referrer = '';
+
+  if (typeof eventIds === 'string') eventIds = [eventIds];
+  if (queryParams.referrer === 'oldest') {
+    referrer = 'ORDER BY created_at LIMIT 1';
+  }
+
+  const placeholder = eventIds.map((el, i) => `$${i + 1}`).join(', ');
+  referrer = 'ORDER BY created_at DESC LIMIT 1';
+
   const query = {
     text: `SELECT 
-              *
-          FROM events
-          WHERE id IN ($1)
+              e.id,
+              e.project_id,
+              e.name,
+              e.status,
+              e.stack,
+              e.message,
+              e.os_type,
+              e.os_release,
+              e.work_space_path,
+              e.version AS runtime,
+              r.url,
+              r.method,
+              r.useragent AS browser,
+              JSON_AGG(JSON_BUILD_OBJECT(
+                'id', c.id,
+                'event_id', c.event_id,
+                'block', c.block,
+                'error_line', c.error_line,
+                'error_column_num', c.error_column_num,
+                'error_line_num', c.error_line_num,
+                'file_name', c.file_name
+              )) AS code_blocks_data
+          FROM 
+              events AS e
+          LEFT JOIN
+              request_info AS r ON r.event_id = e.id
+          LEFT JOIN
+              code_blocks AS c ON c.event_id = e.id
+          WHERE 
+              e.id IN (${placeholder})
+          GROUP BY
+              e.id, e.project_id, e.name, e.status, e.stack, e.message, 
+              e.os_type, e.os_release, e.work_space_path, e.version, r.url, r.method, r.useragent
+          ${referrer}
           `,
-    values: [userId],
+    values: [...eventIds],
   };
   const res = await pool.query(query);
-  return res.rows;
+  return res.rows[0];
 };
