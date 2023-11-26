@@ -4,8 +4,8 @@ class ErrorExporterSDK {
   constructor() {
     this.validate = false;
     this.API_HOST = 'http://localhost:3000';
-    this.EVENT_ENDPOINT = '/api/1.0/event';
-    this.VALIDATION_ENDPOINT = '/api/1.0/validate';
+    this.EVENT_ENDPOINT = '/api/1.0/SDK/event';
+    this.VALIDATION_ENDPOINT = '/api/1.0/SDK/validate';
   }
 
   async init(options = {}) {
