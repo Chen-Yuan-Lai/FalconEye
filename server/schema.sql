@@ -122,7 +122,7 @@ CREATE TABLE public.alert_rules (
     action_interval public.action_interval NOT NULL,
     name character varying(127) NOT NULL,
     channel character varying(10) NOT NULL,
-    token character varying(127) NOT NULL,
+    token character varying[] NOT NULL,
     active boolean NOT NULL
 );
 
@@ -395,14 +395,25 @@ ALTER SEQUENCE public.source_maps_id_seq OWNED BY public.source_maps.id;
 
 
 --
+-- Name: trigger_types; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.trigger_types (
+    id integer NOT NULL,
+    description character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.trigger_types OWNER TO postgres;
+
+--
 -- Name: triggers; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.triggers (
-    id integer NOT NULL,
+    trigger_id bigint NOT NULL,
     rule_id bigint NOT NULL,
-    description character varying(255) NOT NULL,
-    thershold integer,
+    threshold character varying(10),
     time_window public.action_interval
 );
 
@@ -428,7 +439,7 @@ ALTER SEQUENCE public.triggers_id_seq OWNER TO postgres;
 -- Name: triggers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.triggers_id_seq OWNED BY public.triggers.id;
+ALTER SEQUENCE public.triggers_id_seq OWNED BY public.trigger_types.id;
 
 
 --
@@ -526,10 +537,10 @@ ALTER TABLE ONLY public.source_maps ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
--- Name: triggers id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: trigger_types id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.triggers ALTER COLUMN id SET DEFAULT nextval('public.triggers_id_seq'::regclass);
+ALTER TABLE ONLY public.trigger_types ALTER COLUMN id SET DEFAULT nextval('public.triggers_id_seq'::regclass);
 
 
 --
@@ -604,10 +615,10 @@ ALTER TABLE ONLY public.source_maps
 
 
 --
--- Name: triggers triggers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: trigger_types triggers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.triggers
+ALTER TABLE ONLY public.trigger_types
     ADD CONSTRAINT triggers_pkey PRIMARY KEY (id);
 
 
@@ -676,11 +687,19 @@ ALTER TABLE ONLY public.source_maps
 
 
 --
--- Name: triggers triggers_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: triggers trigger_rule_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.triggers
-    ADD CONSTRAINT triggers_rule_id_fkey FOREIGN KEY (rule_id) REFERENCES public.alert_rules(id);
+    ADD CONSTRAINT trigger_rule_rule_id_fkey FOREIGN KEY (rule_id) REFERENCES public.alert_rules(id);
+
+
+--
+-- Name: triggers trigger_rule_trigger_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.triggers
+    ADD CONSTRAINT trigger_rule_trigger_id_fkey FOREIGN KEY (trigger_id) REFERENCES public.trigger_types(id);
 
 
 --
