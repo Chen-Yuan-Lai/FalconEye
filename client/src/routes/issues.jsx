@@ -1,77 +1,155 @@
-import { useEffect, useState } from "react";
-import { useLoaderData, Outlet, useParams, Navigate } from "react-router-dom";
-import { Layout, Space, Table, Tag } from "antd";
-import CusFooter from "../components/footer.jsx";
-import "../css/page.css";
-import { getEvents } from "../utils/fetchData.js";
+import { useEffect, useState } from 'react';
+import { useLoaderData, useParams, useNavigate, Link } from 'react-router-dom';
+import { Layout, Space, Table, Tag } from 'antd';
+import CusFooter from '../components/footer.jsx';
+import IssueSelect from '../components/issueSelect.jsx';
+import '../css/page.css';
+import { getIssues, getProjects } from '../utils/fetchData.js';
 
 const { Content, Header } = Layout;
 const columns = [
   {
-    title: "NAME",
-    dataIndex: "name",
-    key: "name",
-    render: (text) => <a>{text}</a>,
+    title: 'NAME',
+    dataIndex: 'name',
+    key: 'name',
+    render: (text, record) => <Link to={`/issues/issue?${record.params}`}>{text}</Link>,
   },
   {
-    title: "TAGS",
-    key: "tags",
-    dataIndex: "tags",
-    render: (_, { tags }) => (
-      <>
-        {tags.map((tag) => {
-          let color = tag.length > 5 ? "geekblue" : "green";
-          if (tag === "loser") {
-            color = "volcano";
-          }
-          return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </>
-    ),
+    title: 'STATUS',
+    dataIndex: 'status',
+    key: 'status',
   },
   {
-    title: "EVENTS",
-    dataIndex: "events",
-    key: "events",
+    title: 'PROJECT ID',
+    dataIndex: 'projectId',
+    key: 'projectId',
   },
   {
-    title: "USERS",
-    dataIndex: "users",
-    key: "users",
+    title: 'FRAMEWORK',
+    dataIndex: 'framework',
+    key: 'framework',
+  },
+  {
+    title: 'LAST SEEN | FIRST SEEN',
+    dataIndex: 'time',
+    key: 'time',
+  },
+  // {
+  //   title: 'TAGS',
+  //   key: 'tags',
+  //   dataIndex: 'tags',
+  //   render: (_, { tags }) => (
+  //     <>
+  //       {tags.map(tag => {
+  //         let color = tag.length > 5 ? 'geekblue' : 'green';
+  //         if (tag === 'loser') {
+  //           color = 'volcano';
+  //         }
+  //         return (
+  //           <Tag color={color} key={tag}>
+  //             {tag.toUpperCase()}
+  //           </Tag>
+  //         );
+  //       })}
+  //     </>
+  //   ),
+  // },
+  {
+    title: 'EVENTS',
+    dataIndex: 'events',
+    key: 'events',
+  },
+  {
+    title: 'USERS',
+    dataIndex: 'users',
+    key: 'users',
   },
 ];
 
+export async function loader() {
+  try {
+    const jwt = localStorage.getItem('jwt');
+    console.log(jwt);
+    const { data } = await getProjects(jwt);
+    const projectNames = data.map(el => {
+      const project = {
+        value: el.id,
+        label: `${el.framework} ${el.id}`,
+      };
+      return project;
+    });
+
+    return projectNames;
+  } catch (err) {
+    alert('Please sign in first');
+    return redirect('/signin');
+  }
+}
+
 export default function Issues() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [issues, setIssues] = useState(null);
+  const [statsPeriod, setStatsPeriod] = useState(null);
+  const [sort, setSort] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [projectId, setProjectId] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const handleStatsPeriodChange = value => {
+    console.log(`selected ${value}`);
+    setStatsPeriod(value);
+  };
+  const handleSortChange = value => {
+    console.log(`selected ${value}`);
+    setSort(value);
+  };
+  const handleProjectIdChange = value => {
+    console.log(`selected ${value}`);
+    setProjectId(value);
+  };
+  const handleStatusChange = value => {
+    console.log(`selected ${value}`);
+    setStatus(value);
+  };
+
+  const projectNames = useLoaderData();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const jwt = localStorage.getItem("jwt");
+      const jwt = localStorage.getItem('jwt');
       if (!jwt) {
-        alert("Please log in first");
-        return <Navigate to="/signin" />;
+        alert('Please log in first');
+        navigate('/signin');
+        return;
       }
       try {
-        const { data } = await getEvents(jwt);
-        setData(data);
-        const events = data.map((el, i) => {
-          const event = {
-            key: i + 1,
-            name: el.name,
-            tags: [el.os_type],
-            events: 1,
-            users: "ian",
-          };
-          return event;
-        });
-        setData(events);
+        const { data } = await getIssues(jwt, projectId, status, statsPeriod, sort);
+        let issues = null;
+        if (data) {
+          issues = data.map((el, i) => {
+            const { first_seen, latest_seen } = el;
+            const firstSeen = Object.entries(first_seen);
+            const lastSeen = Object.entries(latest_seen);
+            const time = `${firstSeen[0][1]} ${firstSeen[0][0]} ago | ${lastSeen[0][1]} ${lastSeen[0][0]} ago`;
+            // tag 可能要改資料格式，避免issue 的url過長
+            const issue = {
+              key: i + 1,
+              name: el.name,
+              status: el.status,
+              framework: el.project_framework,
+              time: time,
+              events: el.events,
+              users: el.users,
+              projectId: el.project_id,
+              params: el.event_ids.map(el => `id=${el}`).join('&'),
+            };
+            return issue;
+          });
+        }
+
+        setIssues(issues);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -79,20 +157,28 @@ export default function Issues() {
       }
     };
     fetchData();
-  }, []); // Dependency array includes userId
+  }, [projectId, status, statsPeriod, sort]); // Dependency array includes userId
 
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
   return (
-    <Layout className="site-layout ml-[200px] flex flex-col h-screen">
+    <Layout className="site-layout flex flex-col h-screen">
       <Header className="bg-white h-[15vh]">
         <h1>Issues</h1>
       </Header>
       <Content
-        className="px-10"
-        style={{ border: "1px solid #d1d5db", overflow: "initial" }}
+        className="px-10 min-h-[75vh]"
+        style={{ border: '1px solid #d1d5db', overflow: 'initial' }}
       >
-        <Table columns={columns} dataSource={data} />
+        <IssueSelect
+          statsPeriod={statsPeriod}
+          projectId={projectId}
+          status={status}
+          handleStatsPeriodChange={handleStatsPeriodChange}
+          handleProjectIdChange={handleProjectIdChange}
+          handleStatusChange={handleStatusChange}
+          projectNames={projectNames}
+        />
+        <Table loading={loading} className="mt-3" columns={columns} dataSource={issues} />
       </Content>
       <CusFooter />
     </Layout>
