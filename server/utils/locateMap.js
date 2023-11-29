@@ -1,7 +1,9 @@
 import SourceMap from 'source-map';
 
-const locateMap = async (mapContent, fileName, lineNum) => {
+const locateMap = async (mapContent, fileName, lineNum, stack) => {
   const consumer = await new SourceMap.SourceMapConsumer(mapContent);
+
+  // Get the original source content
   const originalSourceIndex = consumer.sources.indexOf(fileName);
   const originalSourceLines = consumer.sourcesContent[originalSourceIndex];
 
@@ -23,7 +25,10 @@ const locateMap = async (mapContent, fileName, lineNum) => {
 
   const codeBlock = trimSource.slice(blockLineIndex.min, blockLineIndex.max + 1);
   const errorLine = trimSource[lineNum - 1].trim();
+
+  consumer.destroy();
   return {
+    stack,
     codeBlock: codeBlock.join('\n'),
     errorLine,
   };

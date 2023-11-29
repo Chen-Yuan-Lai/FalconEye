@@ -74,17 +74,19 @@ export const createCodeBlock = async (
   errorLine,
   errorColumnNum,
   errorLineNum,
+  stack,
 ) => {
   const query = {
     text: `INSERT INTO code_blocks(
               event_id,
-              file_name,
               block,
+              file_name,
               error_line,
               error_column_num,
-              error_line_num) 
-              VALUES($1, $2, $3, $4, $5, $6) RETURNING *`,
-    values: [eventId, fileName, block, errorLine, errorColumnNum, errorLineNum],
+              error_line_num,
+              stack)
+              VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+    values: [eventId, block, fileName, errorLine, errorColumnNum, errorLineNum, stack],
   };
 
   const res = await pool.query(query);
@@ -155,6 +157,7 @@ export const getEventsByIssue = async queryParams => {
               JSON_AGG(JSON_BUILD_OBJECT(
                 'id', c.id,
                 'event_id', c.event_id,
+                'stack', c.stack,
                 'block', c.block,
                 'error_line', c.error_line,
                 'error_column_num', c.error_column_num,

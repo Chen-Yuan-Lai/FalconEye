@@ -36,10 +36,7 @@ export const getProjects = async (req, res, next) => {
 export const getProject = async (req, res, next) => {
   try {
     const { projectId, bin, interval } = req.query;
-    console.log(projectId, bin, interval);
-
     const project = await ProjectModel.getProject(projectId);
-    console.log(project);
     if (!project) return next(new AppError('project not found'));
     const eventsNumPerTime = await ProjectModel.getErrorsPerHoursByProjectId(
       projectId,

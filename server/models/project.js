@@ -111,7 +111,7 @@ export const getProject = async projectId => {
 export const getErrorsPerHoursByProjectId = async (projectId, bin, interval) => {
   const queryStr = format(
     `SELECT
-        TO_CHAR(series.hour, 'MM-DD HH24:MI') || '-' || TO_CHAR((series.hour + INTERVAL %L), 'HH24:MI') AS hourly_interval,
+        TO_CHAR(series.hour, 'MM/DD HH24:MI') || '-' || TO_CHAR((series.hour + INTERVAL %L), 'HH24:MI') AS hourly_interval,
         COALESCE(COUNT(e.id), 0) AS event_count
       FROM 
         (SELECT generate_series(NOW() - INTERVAL %L, NOW() - interval %L, %L) AS hour) AS series
@@ -175,7 +175,7 @@ export const getIssues = async (userId, queryParams) => {
                       p.id as project_id,
                       p.framework as project_framework,
                       AGE(NOW(), MAX(e.created_at)) AS latest_seen,
-                      AGE(NOW(), MAX(e.created_at)) AS first_seen,
+                      AGE(NOW(), MIN(e.created_at)) AS first_seen,
                       ARRAY_AGG(DISTINCT e.id) AS event_ids,
                       ARRAY_AGG(DISTINCT r.ip) AS user_ips,
                       COUNT(e.fingerprints) AS events, 

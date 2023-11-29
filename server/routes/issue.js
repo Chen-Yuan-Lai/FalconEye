@@ -22,7 +22,7 @@ router
 // mark 寫swagger doc
 router
   .route('/issue')
-  .get(authenticate, getEventsByIssue)
+  .get([authenticate, query('id').exists().notEmpty(), handleResult, getEventsByIssue])
   .patch([
     authenticate,
     body('eventIds').exists().notEmpty(),

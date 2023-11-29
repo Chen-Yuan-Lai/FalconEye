@@ -71,7 +71,9 @@ export const createEvent = async (req, res, next) => {
       const response = await s3.send(command);
       const map = await response.Body.transformToString();
 
-      const codeBlocksPromises = stackObjs.map(el => locateMap(map, el.fileName, el.line));
+      const codeBlocksPromises = stackObjs.map(el =>
+        locateMap(map, el.fileName, el.line, el.column, stack),
+      );
       const codeBlocks = await Promise.all(codeBlocksPromises);
 
       const createCodeBlockPromises = new Array(stackObjs.length).fill(null).map((el, i) => {
@@ -84,7 +86,13 @@ export const createEvent = async (req, res, next) => {
           block = codeBlocks[i].codeBlock;
           errorLine = codeBlocks[i].errorLine;
         }
-        const { fileName, line: errorColumnNum, column: errorLineNum } = stackObjs[i];
+        // todo 可以優化成bulk insert
+        const {
+          fileName,
+          line: errorLineNum,
+          column: errorColumnNum,
+          stack: errStack,
+        } = stackObjs[i];
         return eventModel.createCodeBlock(
           event.id,
           fileName,
@@ -92,10 +100,12 @@ export const createEvent = async (req, res, next) => {
           errorLine,
           errorColumnNum,
           errorLineNum,
+          errStack,
         );
       });
 
       codeBlockResult = await Promise.all(createCodeBlockPromises);
+      // console.log(codeBlockResult);
     }
 
     let requestInfoResult = {};
@@ -117,7 +127,7 @@ export const createEvent = async (req, res, next) => {
       codeBlockResult,
       requestInfoResult,
     };
-    console.log(data);
+    // console.log(data);
     res.status(200).json({
       status: 'insert successfully',
       data,

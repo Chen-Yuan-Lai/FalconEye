@@ -5,7 +5,7 @@ class ErrorExporterSDK {
     this.validate = false;
     this.API_HOST = 'http://localhost:3000';
     this.EVENT_ENDPOINT = '/api/1.0/SDK/event';
-    this.VALIDATION_ENDPOINT = '/api/1.0/SDK/validate';
+    this.VALIDATION_ENDPOINT = '/api/1.0/wizard/validate';
   }
 
   async init(options = {}) {

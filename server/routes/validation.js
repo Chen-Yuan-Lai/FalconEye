@@ -4,6 +4,6 @@ import validation from '../controllers/validation.js';
 
 const router = Router();
 
-router.route('/SDK/validate').post(parseDSN, validation);
+router.route('/wizard/validate').post(parseDSN, validation);
 
 export default router;
