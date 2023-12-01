@@ -1,0 +1,23 @@
+{
+  "name": "notificationservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/env": "^3.0.0",
+    "@fastify/postgres": "^5.2.2",
+    "dotenv": "^16.3.1",
+    "fastify": "^4.24.3",
+    "fastify-env": "^2.2.0",
+    "kafkajs": "^2.2.4",
+    "pg": "^8.11.3"
+  }
+}
