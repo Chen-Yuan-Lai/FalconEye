@@ -14,6 +14,7 @@ import userRouter from './routes/user.js';
 import projectRouter from './routes/project.js';
 import validateRouter from './routes/validation.js';
 import issueRouter from './routes/issue.js';
+import alertRouter from './routes/alert.js';
 
 // read json file
 const rawData = fs.readFileSync('swagger_output.json');
@@ -49,6 +50,7 @@ app.use('/api/1.0', [
   projectRouter,
   validateRouter,
   issueRouter,
+  alertRouter,
 ]);
 
 app.use((err, req, res, next) => {
