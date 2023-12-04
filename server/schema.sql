@@ -132,7 +132,8 @@ CREATE TABLE public.alert_rules (
     filter public.filter NOT NULL,
     action_interval public.action_interval NOT NULL,
     name character varying(127) NOT NULL,
-    active boolean NOT NULL
+    active boolean NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
