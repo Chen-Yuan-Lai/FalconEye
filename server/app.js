@@ -43,7 +43,7 @@ app.use(cookieParser());
 // static file
 app.use(express.static(path.join(__dirname, 'public')));
 // Serve the React application from the 'dist' directory
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use(compression());
 
@@ -59,7 +59,7 @@ app.use('/api/1.0', [
 ]);
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist', 'index.html')); // Serve the index.html for all other requests
+  res.sendFile(path.join(__dirname, 'dist', 'index.html')); // Serve the index.html for all other requests
 });
 
 app.all('*', (req, res, next) => {
