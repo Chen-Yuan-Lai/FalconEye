@@ -8,6 +8,7 @@ import path, { dirname } from 'path';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'node:url';
 import swaggerUi from 'swagger-ui-express';
+import AppError from './utils/appError.js';
 import eventRouter from './routes/event.js';
 import sourceMapRouter from './routes/sourceMap.js';
 import userRouter from './routes/user.js';
@@ -41,6 +42,8 @@ app.use(cookieParser());
 
 // static file
 app.use(express.static(path.join(__dirname, 'public')));
+// Serve the React application from the 'dist' directory
+app.use(express.static(path.join(__dirname, '../dist')));
 
 app.use(compression());
 
@@ -54,6 +57,14 @@ app.use('/api/1.0', [
   alertRouter,
   triggerRouter,
 ]);
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist', 'index.html')); // Serve the index.html for all other requests
+});
+
+app.all('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
 
 app.use((err, req, res, next) => {
   const error = Object.assign(err);
