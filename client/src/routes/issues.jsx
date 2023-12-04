@@ -120,13 +120,12 @@ export default function Issues() {
       setLoading(true);
       const jwt = localStorage.getItem('jwt');
       if (!jwt) {
-        alert('Please log in first');
         navigate('/signin');
         return;
       }
       try {
         const { data } = await getIssues(jwt, projectId, status, statsPeriod, sort);
-        let issues = null;
+        let issues = [];
         if (data) {
           issues = data.map((el, i) => {
             const { first_seen, latest_seen } = el;

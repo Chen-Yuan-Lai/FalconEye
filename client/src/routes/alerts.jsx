@@ -54,7 +54,7 @@ export default function Alerts() {
   const projectNames = useLoaderData();
   const [alerts, setAlerts] = useState(null);
   const [status, setStatus] = useState(null);
-  const [projectId, setProjectId] = useState(projectNames[0].value);
+  const [projectId, setProjectId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 

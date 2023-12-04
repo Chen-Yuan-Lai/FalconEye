@@ -11,7 +11,7 @@ export default function AlertSelect({
   return (
     <div className="flex flex-row gap-2 mt-3">
       <Select
-        value={v ? v.value : projectNames[0].value}
+        value={v ? v.value : ''}
         style={{
           width: 120,
         }}

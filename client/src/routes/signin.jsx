@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { redirect } from 'react-router-dom';
 import backgroundImage from '../assets/login.webp';
 import SigninForm from '../components/signin.jsx';
@@ -11,7 +12,7 @@ export async function action({ request }) {
     const { email, password } = userData;
     const res = await signin(email, password);
     localStorage.setItem('jwt', res.data.token);
-    alert('sign up successfully');
+    alert('signin successfully!');
     return redirect('/');
   } catch (error) {
     alert(error);

@@ -14,7 +14,7 @@ export default function IssueSelect({
   return (
     <div className="flex flex-row gap-2 mt-3">
       <Select
-        value={v ? v.label : projectNames[0].label}
+        value={v ? v.label : ''}
         style={{
           width: 120,
         }}

@@ -1,5 +1,3 @@
-import { resetWarned } from 'antd/es/_util/warning';
-
 const host = import.meta.env.VITE_HOST;
 
 const headers = {
