@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useLoaderData, useParams, useNavigate, Link } from 'react-router-dom';
-import { Layout, Space, Table, Tag } from 'antd';
+import { useLoaderData, useParams, useNavigate, Link, redirect } from 'react-router-dom';
+import { Layout, Table, Tag } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import IssueSelect from '../components/issueSelect.jsx';
 import '../css/page.css';
@@ -69,7 +69,6 @@ const columns = [
 export async function loader() {
   try {
     const jwt = localStorage.getItem('jwt');
-    console.log(jwt);
     const { data } = await getProjects(jwt);
     const projectNames = data.map(el => {
       const project = {
@@ -86,6 +85,7 @@ export async function loader() {
   }
 }
 
+// tag 可以優化成useEffect 偵測url query/search parameter的改變 (用 Link改URL)
 export default function Issues() {
   const [issues, setIssues] = useState(null);
   const [statsPeriod, setStatsPeriod] = useState(null);
@@ -161,7 +161,7 @@ export default function Issues() {
 
   if (error) return <p>Error: {error}</p>;
   return (
-    <Layout className="site-layout flex flex-col h-screen">
+    <Layout className="site-layout flex flex-col min-h-screen">
       <Header className="bg-white h-[15vh]">
         <h1>Issues</h1>
       </Header>

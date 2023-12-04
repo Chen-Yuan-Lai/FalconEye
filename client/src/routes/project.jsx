@@ -8,8 +8,8 @@ import { getProject } from '../utils/fetchData.js';
 
 const { Content, Header } = Layout;
 
-const DemoColumn = ({ eventsNumPerTime }) => {
-  const data = eventsNumPerTime.map(el => {
+const DemoColumn = ({ eventPerHour }) => {
+  const data = eventPerHour.map(el => {
     const bin = {
       time: el.hourly_interval.split('-')[0],
       count: +el.event_count,
@@ -89,7 +89,7 @@ export default function Project() {
     return <div>Error: {error.message}</div>;
   }
   return (
-    <Layout className="site-layout flex flex-col">
+    <Layout className="site-layout flex flex-col min-h-screen">
       <Header className="bg-white h-[15vh]">
         <h1>{loading ? 'Loading' : project.framework}</h1>
       </Header>

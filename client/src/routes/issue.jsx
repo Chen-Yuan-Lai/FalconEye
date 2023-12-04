@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Card, Spin } from 'antd';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Layout, Spin } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import Event from '../components/event.jsx';
 import { getEvent } from '../utils/fetchData.js';
@@ -44,7 +44,7 @@ export default function Issue() {
 
   if (error) return <p>Error: {error}</p>;
   return (
-    <Layout className="site-layout flex flex-col">
+    <Layout className="site-layout flex flex-col min-h-screen">
       <Header className="bg-white h-[15vh]">
         {loading ? (
           <Spin />
