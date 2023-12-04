@@ -3,11 +3,13 @@ import * as ChannelModel from '../models/channel.js';
 import * as TriggerModel from '../models/trigger.js';
 import pool from '../models/databasePool.js';
 import AppError from '../utils/appError.js';
-import { sendMessage, connectProducer } from '../utils/kafka.js';
+// import { sendMessage, connectProducer } from '../utils/kafka.js';
 import setCronJob from '../utils/cronJob.js';
 
+export const PAGE_SIZE = 6;
+
 const jobs = {};
-await connectProducer();
+// await connectProducer();
 
 // todo
 export const createAlert = async (req, res, next) => {
@@ -29,12 +31,12 @@ export const createAlert = async (req, res, next) => {
     const channelRes = await ChannelModel.createChannels(client, ruleId, channels);
     await client.query('COMMIT');
 
-    const job = setCronJob(actionInterval, async () => {
-      await sendMessage('notification', `${ruleId}`);
-    });
+    // const job = setCronJob(actionInterval, async () => {
+    //   await sendMessage('notification', `${ruleId}`);
+    // });
 
-    jobs[ruleId] = job;
-    console.log(jobs);
+    // jobs[ruleId] = job;
+    // console.log(jobs);
 
     res.status(200).json({
       data: {
@@ -51,6 +53,53 @@ export const createAlert = async (req, res, next) => {
     client.release();
   }
 };
+
+export const getAlerts = async (req, res, next) => {
+  try {
+    const { projectId } = req.query;
+    const page = req.query.page || 1;
+    const offsetValue = (page - 1) * PAGE_SIZE;
+
+    const alerts = await AlertModel.getAlerts(projectId, PAGE_SIZE, offsetValue);
+    if (alerts.length === 0) {
+      return next(new AppError('alert not found', 404));
+    }
+
+    const totalPage = Math.ceil(Number(alerts[0].total_count) / PAGE_SIZE);
+    res.status(200).json({
+      data: alerts,
+      totalPage,
+      nextPage: page + 1 >= totalPage ? page : page + 1,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+export const getAlert = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { interval } = req.query;
+    const alert = await AlertModel.getAlert(+id);
+    if (!alert) {
+      return next(new AppError('alert not found', 404));
+    }
+
+    const alertTriggeredPerHour = await AlertModel.getAlertPerHour(+id, interval);
+
+    res.status(200).json({
+      data: {
+        alert,
+        alertTriggeredPerHour,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
 export const updateAlert = async (req, res, next) => {
   try {
     const { ruleId } = req.query;
@@ -82,7 +131,7 @@ export const updateAlert = async (req, res, next) => {
   }
 };
 
-export const deleteAltert = async (req, res, next) => {
+export const deleteAlert = async (req, res, next) => {
   const client = await pool.connect();
   try {
     client.query('BEGIN');

@@ -38,6 +38,15 @@ export const getProject = async (req, res, next) => {
     const { projectId, bin, interval } = req.query;
     const project = await ProjectModel.getProject(projectId);
     if (!project) return next(new AppError('project not found'));
+
+    if (!bin || !interval) {
+      res.status(200).json({
+        data: {
+          project,
+        },
+      });
+      return;
+    }
     const eventsNumPerTime = await ProjectModel.getErrorsPerHoursByProjectId(
       projectId,
       bin,
@@ -56,12 +65,39 @@ export const getProject = async (req, res, next) => {
   }
 };
 
+export const getProjectMembers = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const { members } = await ProjectModel.getProject(id);
+
+    const userPromises = [];
+    members.forEach(el => userPromises.push(UserModel.findUserById(+el)));
+    const users = await Promise.all(userPromises);
+
+    const trimUsers = users.map(el => {
+      const user = Object.assign(el);
+      delete user.password;
+      delete user.user_key;
+      return user;
+    });
+
+    res.status(200).json({
+      data: trimUsers,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
 export const updateProjectMember = async (req, res, next) => {
   try {
-    const { projectId, email, action } = req.body;
+    const { id } = req.params;
+    const { email, action } = req.body;
     const member = await UserModel.findUserByEmail(email);
     if (!member) return next(new AppError('user not found', 404));
-    const project = await ProjectModel.checkMemberByProjectId(member.id, projectId);
+    const project = await ProjectModel.checkMemberByProjectId(member.id, id);
 
     if (action === 'add' && project)
       return next(new AppError('the user already participate in the project', 400));
