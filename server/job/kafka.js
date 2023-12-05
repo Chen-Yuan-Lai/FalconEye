@@ -1,6 +1,6 @@
 import { Kafka } from 'kafkajs';
 
-const brokers = [process.env.KAFKA_BROKER];
+const brokers = ['172.31.27.157:9092'];
 console.log({
   clientId: 'message-app',
   brokers,
