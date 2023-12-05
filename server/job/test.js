@@ -1,4 +1,4 @@
-import { connectProducer, sendMessage, disconnectProducer } from '../job/kafka.js';
+import { connectProducer, sendMessage, disconnectProducer } from './kafka.js';
 
 (async () => {
   await connectProducer();
