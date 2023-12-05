@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { connectProducer, sendMessage, disconnectProducer } from './kafka.js';
 
 (async () => {
