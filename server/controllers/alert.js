@@ -3,13 +3,13 @@ import * as ChannelModel from '../models/channel.js';
 import * as TriggerModel from '../models/trigger.js';
 import pool from '../models/databasePool.js';
 import AppError from '../utils/appError.js';
-// import { sendMessage, connectProducer } from '../utils/kafka.js';
+import { sendMessage, connectProducer } from '../job/kafka.js';
 import setCronJob from '../utils/cronJob.js';
 
 export const PAGE_SIZE = 6;
 
 const jobs = {};
-// await connectProducer();
+await connectProducer();
 
 // todo
 export const createAlert = async (req, res, next) => {
@@ -31,12 +31,12 @@ export const createAlert = async (req, res, next) => {
     const channelRes = await ChannelModel.createChannels(client, ruleId, channels);
     await client.query('COMMIT');
 
-    // const job = setCronJob(actionInterval, async () => {
-    //   await sendMessage('notification', `${ruleId}`);
-    // });
+    const job = setCronJob(actionInterval, async () => {
+      await sendMessage('notification', `${ruleId}`);
+    });
 
-    // jobs[ruleId] = job;
-    // console.log(jobs);
+    jobs[ruleId] = job;
+    console.log(jobs);
 
     res.status(200).json({
       data: {
@@ -102,10 +102,10 @@ export const getAlert = async (req, res, next) => {
 
 export const updateAlert = async (req, res, next) => {
   try {
-    const { ruleId } = req.query;
+    const { id } = req.params;
     const fields = req.body;
 
-    const updateRes = await AlertModel.updateAlert(ruleId, fields);
+    const updateRes = await AlertModel.updateAlert(id, fields);
 
     // create a job
     if (updateRes.active && !jobs[updateRes.id]) {

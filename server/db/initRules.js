@@ -21,7 +21,7 @@ const triggers = [
 const insertTrigger = async rows => {
   try {
     await client.connect();
-    const queryText = `INSERT INTO triggers(description) VALUES ${rows
+    const queryText = `INSERT INTO trigger_types(description) VALUES ${rows
       .map((_, i) => `($${i + 1})`)
       .join(', ')}`;
     console.log(queryText, rows);

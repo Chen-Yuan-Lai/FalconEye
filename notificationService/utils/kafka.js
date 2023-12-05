@@ -3,7 +3,7 @@ import { Kafka } from 'kafkajs';
 
 const messageEmitter = new EventEmitter();
 
-const brokers = ['0.0.0.0:9092'];
+const brokers = [process.env.KAFKA_BROKER];
 const kafka = new Kafka({
   clientId: 'notification-service',
   brokers,
