@@ -1,5 +1,6 @@
-const API_HOST = "http://localhost:3000";
-const SOURCE_MAP_ENDPOINT = "/api/1.0/validate";
+const API_HOST = process.env.API_HOST;
+// mark route 要改
+const VALIDATE_ENDPOINT = process.env.VALIDATE_ENDPOINT;
 
 const validate = async (userKey, clientToken) => {
   if (!userKey || !clientToken) {
@@ -10,7 +11,7 @@ const validate = async (userKey, clientToken) => {
     clientToken,
   };
 
-  const res = await fetch(`${API_HOST}${SOURCE_MAP_ENDPOINT}`, {
+  const res = await fetch(`${API_HOST}${VALIDATE_ENDPOINT}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

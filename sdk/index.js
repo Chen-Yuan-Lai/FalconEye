@@ -1,11 +1,12 @@
+import 'dotenv/config';
 import os from 'os';
 
 class ErrorExporterSDK {
   constructor() {
     this.validate = false;
-    this.API_HOST = 'http://localhost:3000';
-    this.EVENT_ENDPOINT = '/api/1.0/SDK/event';
-    this.VALIDATION_ENDPOINT = '/api/1.0/wizard/validate';
+    this.API_HOST = process.env.API_HOST;
+    this.EVENT_ENDPOINT = process.env.EVENT_ENDPOINT;
+    this.VALIDATION_ENDPOINT = process.env.VALIDATION_ENDPOINT;
   }
 
   async init(options = {}) {
