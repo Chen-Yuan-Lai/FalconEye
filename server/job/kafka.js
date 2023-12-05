@@ -36,9 +36,3 @@ export const sendMessage = async (topic, message) => {
   });
   return res;
 };
-
-// (async () => {
-//   await connectProducer();
-//   await sendMessage('notification', 'hihi');
-//   await disconnectProducer();
-// })();
