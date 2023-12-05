@@ -17,15 +17,6 @@ console.log({
 const kafka = new Kafka({
   clientId: 'message-app',
   brokers,
-  retry: {
-    initialRetryTime: 100, // Initial delay between retries in milliseconds
-    retries: 30, // Maximum number of retries
-    maxRetryTime: 30000, // Maximum delay between retries in milliseconds
-    factor: 2, // Exponential factor by which the retry time will be increased
-    multiplier: 1.5, // Multiplier to calculate retry delay
-    maxInFlightRequests: 1, // Maximum number of in-flight requests during retry
-    retryForever: false, // Whether to retry forever
-  },
 });
 
 const producer = kafka.producer();
