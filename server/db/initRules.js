@@ -8,6 +8,9 @@ const client = new Client({
   database: process.env.POSTGRESQL_DATABASE,
   password: process.env.POSTGRESQL_PASSWORD,
   port: parseInt(process.env.POSTGRESQL_PORT, 10),
+  ssl: {
+    rejectUnauthorized: false, // For self-signed certificates; set to true for production
+  },
 });
 
 console.log('====== init alert triggers ======');
