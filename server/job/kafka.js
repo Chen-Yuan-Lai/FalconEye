@@ -1,6 +1,8 @@
+import 'dotenv/config';
 import { Kafka } from 'kafkajs';
 
 const brokers = [process.env.KAFKA_BROKER];
+console.log(process.env.KAFKA_BROKER);
 const kafka = new Kafka({
   clientId: 'message-app',
   brokers,
