@@ -1,6 +1,6 @@
 import { Kafka } from 'kafkajs';
 
-const brokers = ['0.0.0.0:9092'];
+const brokers = [process.env.KAFKA_BROKER];
 const kafka = new Kafka({
   clientId: 'message-app',
   brokers,
