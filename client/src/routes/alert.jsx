@@ -74,36 +74,36 @@ export default function Alert() {
           </div>
         )}
       </Header>
-      <Select
-        defaultValue="24h"
-        style={{
-          width: 120,
-        }}
-        loading={loading}
-        onChange={handleChange}
-        options={[
-          {
-            value: '24h',
-            label: 'Last 24 hours',
-          },
-          {
-            value: '7d',
-            label: 'Last 7 days',
-          },
-          {
-            value: '14d',
-            label: 'Last 14 days',
-          },
-          {
-            value: '30d',
-            label: 'Last 30 days',
-          },
-        ]}
-      />
       <Content
         className="px-10 min-h-[75vh]"
         style={{ border: '1px solid #d1d5db', overflow: 'initial' }}
       >
+        <Select
+          defaultValue="7d"
+          style={{
+            width: 120,
+          }}
+          loading={loading}
+          onChange={handleChange}
+          options={[
+            {
+              value: '24h',
+              label: 'Last 24 hours',
+            },
+            {
+              value: '7d',
+              label: 'Last 7 days',
+            },
+            {
+              value: '14d',
+              label: 'Last 14 days',
+            },
+            {
+              value: '30d',
+              label: 'Last 30 days',
+            },
+          ]}
+        />
         <Card className="mt-3" title="Alert triggered" loading={loading}>
           <AlertArea alertTriggeredPerHour={alertsTriggeredPerHour} />
         </Card>

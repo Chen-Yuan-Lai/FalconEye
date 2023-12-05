@@ -1,7 +1,6 @@
-const API_HOST = process.env.API_HOST;
+const API_HOST = "http://localhost:3000";
+const VALIDATE_ENDPOINT = "/api/1.0/wizard/validate";
 // mark route 要改
-const VALIDATE_ENDPOINT = process.env.VALIDATE_ENDPOINT;
-
 const validate = async (userKey, clientToken) => {
   if (!userKey || !clientToken) {
     throw new Error("Missing required parameters");

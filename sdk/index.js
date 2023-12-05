@@ -1,15 +1,14 @@
-import 'dotenv/config';
 import os from 'os';
 
 class ErrorExporterSDK {
   constructor() {
     this.validate = false;
-    this.API_HOST = process.env.API_HOST;
-    this.EVENT_ENDPOINT = process.env.EVENT_ENDPOINT;
-    this.VALIDATION_ENDPOINT = process.env.VALIDATION_ENDPOINT;
+    this.EVENT_ENDPOINT = '/api/1.0/SDK/event';
+    this.VALIDATION_ENDPOINT = '/api/1.0/wizard/validate';
   }
 
   async init(options = {}) {
+    this.API_HOST = options.apiHost;
     this.userKey = options.userKey;
     this.clientToken = options.clientToken;
     await this.validateSDK();
@@ -98,6 +97,10 @@ class ErrorExporterSDK {
 
   async validateSDK() {
     try {
+      if (!this.API_HOST) {
+        throw new Error("host name can't be empty");
+      }
+
       if (!this.userKey || !this.clientToken) {
         throw new Error("user key and client token can't be empty");
       }

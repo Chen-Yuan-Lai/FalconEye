@@ -1,5 +1,5 @@
-const API_HOST = process.env.API_HOST;
-const SOURCE_MAP_ENDPOINT = process.env.SOURCE_MAP_ENDPOINT;
+const API_HOST = "http://localhost:3000";
+const SOURCE_MAP_ENDPOINT = "/api/1.0/sourceMap";
 
 const sendSourceMap = async (map, userKey, clientToken) => {
   if (!map || !userKey || !clientToken) {

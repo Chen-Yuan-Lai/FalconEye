@@ -8,8 +8,9 @@ import { getProject } from '../utils/fetchData.js';
 
 const { Content, Header } = Layout;
 
-const DemoColumn = ({ eventPerHour }) => {
-  const data = eventPerHour.map(el => {
+const DemoColumn = ({ eventsNumPerTime }) => {
+  console.log(eventsNumPerTime);
+  const data = eventsNumPerTime.map(el => {
     const bin = {
       time: el.hourly_interval.split('-')[0],
       count: +el.event_count,
@@ -69,6 +70,7 @@ export default function Project() {
           return;
         }
         const { data } = await getProject(jwt, projectId, '1h', '24h');
+        console.log(data);
         setProject(data.project);
         setEventsNumPerTime(data.eventsNumPerTime);
       } catch (err) {
@@ -80,10 +82,6 @@ export default function Project() {
     };
     fetchData();
   }, []);
-
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
 
   if (error) {
     return <div>Error: {error.message}</div>;
