@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Spin } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Layout, Spin, Button } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import Event from '../components/event.jsx';
-import { getEvent } from '../utils/fetchData.js';
+import { getEvent, getEventsByFingerprints } from '../utils/fetchData.js';
 import '../css/page.css';
 
 const { Content, Header } = Layout;
@@ -11,12 +11,25 @@ const { Content, Header } = Layout;
 export default function Issue() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [event, setEvent] = useState(null);
+  const [events, setEvents] = useState(null);
+  const [page, setPage] = useState(1);
+  const [index, setIndex] = useState(0);
+  const { fingerprints } = useParams();
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const eventIds = queryParams.getAll('id');
   const navigate = useNavigate();
+  const handleClick = value => {
+    let currentIndex = index;
+    const currEventsSize = events.length;
+    let curPage = page;
+
+    if (currentIndex + value < currEventsSize && currentIndex + value >= 0) {
+      setIndex(currentIndex + value);
+    } else if (currentIndex + value >= currEventsSize && events.nextPage) {
+      setPage(curPage + 1);
+    } else if (currentIndex + value <= 0 && events.nextPage) {
+      setPage(curPage - 1);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,10 +40,11 @@ export default function Issue() {
           navigate('/signin');
           return;
         }
-        const event = await getEvent(jwt, eventIds);
+        const event = await getEventsByFingerprints(jwt, fingerprints, page);
+        console.log(event);
         if (event) {
           const { data } = event;
-          setEvent(data);
+          setEvents(data);
         }
       } catch (err) {
         console.error('Error fetching project details:', err);
@@ -40,7 +54,7 @@ export default function Issue() {
       }
     };
     fetchData();
-  }, []);
+  }, [page]);
 
   if (error) return <p>Error: {error}</p>;
   return (
@@ -50,16 +64,16 @@ export default function Issue() {
           <Spin />
         ) : (
           <div className="flex flex-row gap-5">
-            <h1>{event.name}</h1>
-            <h2>{`${event.method} ${event.url}`}</h2>
+            <h1>{events[index].name}</h1>
+            <h2>{`${events[index].method} ${events[index].url}`}</h2>
           </div>
         )}
       </Header>
       <Content
-        className="px-10 min-h-[75vh]"
+        className="px-10 py-5 min-h-[75vh]"
         style={{ border: '1px solid #d1d5db', overflow: 'initial' }}
       >
-        {loading ? <Spin /> : <Event event={event} />}
+        {loading ? <Spin /> : <Event event={events[index]} handleClick={handleClick} />}
       </Content>
       <CusFooter />
     </Layout>

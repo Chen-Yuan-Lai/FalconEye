@@ -10,11 +10,15 @@ export default function IssueSelect({
   handleStatusChange,
   projectNames,
 }) {
-  const v = projectNames.find(el => el.value === projectId);
+  let v = '';
+  if (projectNames && projectNames.length != 0) {
+    const selectOption = projectNames[0];
+    v = selectOption.value;
+  }
   return (
     <div className="flex flex-row gap-2 mt-3">
       <Select
-        value={v ? v.label : ''}
+        value={v}
         style={{
           width: 120,
         }}

@@ -37,7 +37,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: 'issues/issue',
+        path: 'issues/issue/:fingerprints',
         element: <Issue />,
         errorElement: <ErrorPage />,
       },

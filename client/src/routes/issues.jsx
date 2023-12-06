@@ -12,7 +12,7 @@ const columns = [
     title: 'NAME',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => <Link to={`/issues/issue?${record.params}`}>{text}</Link>,
+    render: (text, record) => <Link to={`/issues/issue/${record.fingerprints}`}>{text}</Link>,
   },
   {
     title: 'STATUS',
@@ -96,19 +96,15 @@ export default function Issues() {
   const [error, setError] = useState(null);
 
   const handleStatsPeriodChange = value => {
-    console.log(`selected ${value}`);
     setStatsPeriod(value);
   };
   const handleSortChange = value => {
-    console.log(`selected ${value}`);
     setSort(value);
   };
   const handleProjectIdChange = value => {
-    console.log(`selected ${value}`);
     setProjectId(value);
   };
   const handleStatusChange = value => {
-    console.log(`selected ${value}`);
     setStatus(value);
   };
 
@@ -126,6 +122,7 @@ export default function Issues() {
       try {
         const { data } = await getIssues(jwt, projectId, status, statsPeriod, sort);
         let issues = [];
+        console.log(data);
         if (data) {
           issues = data.map((el, i) => {
             const { first_seen, latest_seen } = el;
@@ -143,6 +140,7 @@ export default function Issues() {
               users: el.users,
               projectId: el.project_id,
               params: el.event_ids.map(el => `id=${el}`).join('&'),
+              fingerprints: el.fingerprints,
             };
             return issue;
           });

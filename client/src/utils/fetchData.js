@@ -88,6 +88,16 @@ export const getEvent = async (jwt, eventIds) => {
   return await res.json();
 };
 
+export const getEventsByFingerprints = async (jwt, fingerprints, page = null) => {
+  headers.Authorization = `Bearer ${jwt}`;
+  const url = `${host}event/${fingerprints}?page=${page || 1}`;
+  const res = await fetch(url, { headers });
+  if (!res.ok && `${res.status}`.startsWith('4')) {
+    return null;
+  }
+  return await res.json();
+};
+
 export const getTriggersTypes = async jwt => {
   headers.Authorization = `Bearer ${jwt}`;
   const url = `${host}/triggers/types`;
