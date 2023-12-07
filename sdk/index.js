@@ -8,18 +8,22 @@ class ErrorExporterSDK {
   }
 
   async init(options = {}) {
-    this.API_HOST = options.apiHost;
-    this.userKey = options.userKey;
-    this.clientToken = options.clientToken;
-    await this.validateSDK();
-    console.log('initialize SDK successfully');
-    process.on('uncaughtException', error => {
-      this.captureError(error);
-    });
+    try {
+      this.API_HOST = options.apiHost;
+      this.userKey = options.userKey;
+      this.clientToken = options.clientToken;
+      await this.validateSDK();
+      console.log('initialize SDK successfully');
+      process.on('uncaughtException', error => {
+        this.captureError(error);
+      });
 
-    process.on('unhandledRejection', error => {
-      this.captureError(error);
-    });
+      process.on('unhandledRejection', error => {
+        this.captureError(error);
+      });
+    } catch (err) {
+      console.error(err.message);
+    }
   }
 
   extractRequestInfo(req) {
@@ -96,38 +100,34 @@ class ErrorExporterSDK {
   }
 
   async validateSDK() {
-    try {
-      if (!this.API_HOST) {
-        throw new Error("host name can't be empty");
-      }
-
-      if (!this.userKey || !this.clientToken) {
-        throw new Error("user key and client token can't be empty");
-      }
-
-      const content = {
-        userKey: this.userKey,
-        clientToken: this.clientToken,
-      };
-
-      const res = await fetch(`${this.API_HOST}${this.VALIDATION_ENDPOINT}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(content),
-      });
-
-      if (!res.ok && `${res.status}`.startsWith('4')) {
-        const errorMessage = await res.text();
-        const msg = JSON.parse(errorMessage);
-        throw new Error(`Failed to initialize SDK: ${msg.data}`);
-      }
-      this.validate = true;
-      return await res.json();
-    } catch (err) {
-      console.error(err.message);
+    if (!this.API_HOST) {
+      throw new Error("host name can't be empty");
     }
+
+    if (!this.userKey || !this.clientToken) {
+      throw new Error("user key and client token can't be empty");
+    }
+
+    const content = {
+      userKey: this.userKey,
+      clientToken: this.clientToken,
+    };
+
+    const res = await fetch(`${this.API_HOST}${this.VALIDATION_ENDPOINT}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(content),
+    });
+
+    if (!res.ok && `${res.status}`.startsWith('4')) {
+      const errorMessage = await res.text();
+      const msg = JSON.parse(errorMessage);
+      throw new Error(`Failed to initialize SDK: ${msg.data}`);
+    }
+    this.validate = true;
+    return await res.json();
   }
 
   requestHandler() {
