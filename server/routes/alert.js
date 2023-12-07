@@ -14,11 +14,7 @@ const router = Router();
 // await connectProducer();
 
 // todo
-router
-  .route('/alert/:id', authenticate, handleResult)
-  .get(getAlert)
-  .patch(updateAlert)
-  .delete(deleteAlert);
+router.route('/alert/:id').get(getAlert).patch(updateAlert).delete(deleteAlert);
 router
   .route('/alerts', authenticate)
   .get(query('projectId').optional({ checkFalsy: false }).trim().isInt(), handleResult, getAlerts);

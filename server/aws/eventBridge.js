@@ -5,6 +5,7 @@ import {
   DisableRuleCommand,
   DeleteRuleCommand,
   EnableRuleCommand,
+  RemoveTargetsCommand,
 } from '@aws-sdk/client-eventbridge';
 
 // UTC time
@@ -19,10 +20,10 @@ const cronTable = {
 };
 
 const client = new EventBridgeClient({
-  region: 'ap-southeast-2',
+  region: process.env.AWS_REGION,
   credentials: {
-    accessKeyId: 'AKIAQUX3TSK6U5JHQ4VU',
-    secretAccessKey: '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',
+    accessKeyId: process.env.USER_ACCESS_KEY,
+    secretAccessKey: process.env.USER_SECRET_ACCESS_KEY,
   },
 });
 
@@ -46,13 +47,25 @@ export const createTarget = async ruleId => {
       {
         Id: 'kafka-producer',
         Arn: 'arn:aws:lambda:ap-southeast-2:044551082685:function:eventBridge-lambda',
-        Input: JSON.stringify({ ruleId }),
+        Input: JSON.stringify({ ruleId: `${ruleId}` }),
       },
     ],
   };
 
   const putTargetsCommand = new PutTargetsCommand(params);
   const res = await client.send(putTargetsCommand);
+
+  return res;
+};
+
+export const removeTargets = async ruleId => {
+  const params = {
+    Rule: `Alert-Rule-${ruleId}`,
+    Ids: ['kafka-producer'],
+  };
+
+  const removeTargetsCommand = new RemoveTargetsCommand(params);
+  const res = await client.send(removeTargetsCommand);
 
   return res;
 };

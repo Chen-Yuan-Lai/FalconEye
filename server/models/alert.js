@@ -42,7 +42,9 @@ export const getAlerts = async (projectId, pageSize, offsetValue) => {
               ) AS latest_triggered_time
           FROM 
               alert_rules AS r
-          WHERE r.project_id = $3
+          WHERE 
+              r.project_id = $3
+              AND r.delete = false
           ORDER BY 
               r.created_at DESC
           LIMIT $1
@@ -63,6 +65,7 @@ export const getAlert = async alertId => {
               alert_rules
           WHERE
               id = $1
+              AND delete = false
           `,
     values: [alertId],
   };
@@ -81,7 +84,8 @@ export const getAlertPerHour = async (alertId, interval) => {
       LEFT JOIN
         alert_histories AS h ON h.trigger_time >= series.hour
         AND h.trigger_time < series.hour + INTERVAL %L
-        AND h.rule_id = $1          
+        AND h.rule_id = $1
+        AND h.delete = false         
       GROUP BY
         series.hour
       ORDER BY
@@ -110,7 +114,30 @@ export const getAlertPerHour = async (alertId, interval) => {
 // tag 因為要多表一起刪 controller會用transaction
 export const deleteAlert = async (client, ruleId) => {
   const query = {
-    text: `DELETE FROM alert_rules WHERE id = $1 RETURNING *`,
+    text: `UPDATE 
+              alert_rules 
+          SET 
+              delete = true 
+          WHERE 
+              id = $1
+          RETURNING delete`,
+    values: [ruleId],
+  };
+
+  const res = await client.query(query);
+
+  return res.rows[0];
+};
+
+export const deleteAlertHistories = async (client, ruleId) => {
+  const query = {
+    text: `UPDATE 
+              alert_histories
+          SET 
+              delete = true 
+          WHERE 
+              rule_id = $1
+          RETURNING delete`,
     values: [ruleId],
   };
 
@@ -127,7 +154,13 @@ export const updateAlert = async (ruleId, fields) => {
   });
 
   const query = {
-    text: `UPDATE alert_rules SET ${columns.join(', ')} WHERE id = ${ruleId} RETURNING *`,
+    text: `UPDATE 
+              alert_rules 
+          SET ${columns.join(', ')} 
+          WHERE
+              id = ${ruleId}
+              AND delete = false
+          RETURNING *`,
     values: Object.values(fields),
   };
 

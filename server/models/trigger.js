@@ -34,7 +34,7 @@ export const getTriggerTypes = async () => {
 
 export const deleteTrigger = async (client, ruleId) => {
   const query = {
-    text: `DELETE FROM triggers WHERE rule_id = $1 RETURNING *`,
+    text: `UPDATE triggers SET delete = true WHERE rule_id = $1 RETURNING delete`,
     values: [ruleId],
   };
 

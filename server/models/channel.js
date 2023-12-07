@@ -18,7 +18,7 @@ export const getChannel = async () => {};
 
 export const deleteChannel = async (client, ruleId) => {
   const query = {
-    text: `DELETE FROM channels WHERE rule_id = $1 RETURNING *`,
+    text: `UPDATE channels SET delete = true WHERE rule_id = $1 RETURNING delete`,
     values: [ruleId],
   };
 

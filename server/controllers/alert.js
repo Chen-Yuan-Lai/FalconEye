@@ -10,8 +10,10 @@ import {
   deleteRule,
   disableRule,
   enableRule,
-} from '../job/eventBridge.js';
-import setCronJob from '../utils/cronJob.js';
+  removeTargets,
+} from '../aws/eventBridge.js';
+import { addPermission, removePermission } from '../aws/lambda.js';
+// import setCronJob from '../utils/cronJob.js';
 
 export const PAGE_SIZE = 6;
 
@@ -39,6 +41,7 @@ export const createAlert = async (req, res, next) => {
 
     const eventBridgeRes = await createRule(ruleId, actionInterval);
     const targetRes = await createTarget(ruleId);
+    const addPermissionRes = await addPermission(ruleId);
     await client.query('COMMIT');
 
     // const job = setCronJob(actionInterval, async () => {
@@ -55,6 +58,7 @@ export const createAlert = async (req, res, next) => {
         channelRes,
         eventBridgeRes,
         targetRes,
+        addPermissionRes,
       },
     });
   } catch (err) {
@@ -118,6 +122,9 @@ export const updateAlert = async (req, res, next) => {
     const fields = req.body;
 
     const updateRes = await AlertModel.updateAlert(ruleId, fields);
+    if (!updateRes) {
+      return next(new AppError('the alert was already be deleted', 400));
+    }
 
     // create a job
     // if (updateRes.active && !jobs[updateRes.id]) {
@@ -127,7 +134,7 @@ export const updateAlert = async (req, res, next) => {
 
     //   jobs[updateRes.id] = job;
     // }
-    // // delete a job
+    // delete a job
     // if (!updateRes.active && jobs[updateRes.id]) {
     //   jobs[updateRes.id].cancel();
 
@@ -157,10 +164,13 @@ export const deleteAlert = async (req, res, next) => {
   const client = await pool.connect();
   try {
     client.query('BEGIN');
-    const { id: ruleId } = req.params;
+    const ruleId = +req.params.id;
     const channelRes = await ChannelModel.deleteChannel(client, ruleId);
     const triggerRes = await TriggerModel.deleteTrigger(client, ruleId);
     const alertRes = await AlertModel.deleteAlert(client, ruleId);
+
+    const removeTargetsRes = await removeTargets(ruleId);
+    const removePermissionRes = await removePermission(ruleId);
     const eventBridgeRes = await deleteRule(ruleId);
 
     client.query('COMMIT');
@@ -169,7 +179,9 @@ export const deleteAlert = async (req, res, next) => {
         alertRes,
         channelRes,
         triggerRes,
+        removeTargetsRes,
         eventBridgeRes,
+        removePermissionRes,
       },
     });
   } catch (err) {
