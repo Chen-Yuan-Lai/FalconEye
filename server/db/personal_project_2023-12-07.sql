@@ -16,8 +16,29 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP DATABASE personal_project;
 --
--- Name: action_interval; Type: TYPE; Schema: public; Owner: postgres
+-- Name: personal_project; Type: DATABASE; Schema: -; Owner: -
+--
+
+CREATE DATABASE personal_project WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'C.UTF-8';
+
+
+\connect personal_project
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: action_interval; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE public.action_interval AS ENUM (
@@ -32,10 +53,8 @@ CREATE TYPE public.action_interval AS ENUM (
 );
 
 
-ALTER TYPE public.action_interval OWNER TO postgres;
-
 --
--- Name: alert_status; Type: TYPE; Schema: public; Owner: postgres
+-- Name: alert_status; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE public.alert_status AS ENUM (
@@ -44,10 +63,8 @@ CREATE TYPE public.alert_status AS ENUM (
 );
 
 
-ALTER TYPE public.alert_status OWNER TO postgres;
-
 --
--- Name: eft; Type: TYPE; Schema: public; Owner: postgres
+-- Name: eft; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE public.eft AS ENUM (
@@ -56,10 +73,8 @@ CREATE TYPE public.eft AS ENUM (
 );
 
 
-ALTER TYPE public.eft OWNER TO postgres;
-
 --
--- Name: event_status; Type: TYPE; Schema: public; Owner: postgres
+-- Name: event_status; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE public.event_status AS ENUM (
@@ -68,10 +83,8 @@ CREATE TYPE public.event_status AS ENUM (
 );
 
 
-ALTER TYPE public.event_status OWNER TO postgres;
-
 --
--- Name: filter; Type: TYPE; Schema: public; Owner: postgres
+-- Name: filter; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE public.filter AS ENUM (
@@ -81,27 +94,24 @@ CREATE TYPE public.filter AS ENUM (
 );
 
 
-ALTER TYPE public.filter OWNER TO postgres;
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: alert_histories; Type: TABLE; Schema: public; Owner: postgres
+-- Name: alert_histories; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.alert_histories (
     id integer NOT NULL,
     rule_id bigint NOT NULL,
-    trigger_time timestamp with time zone DEFAULT now()
+    trigger_time timestamp with time zone DEFAULT now(),
+    delete boolean DEFAULT false
 );
 
 
-ALTER TABLE public.alert_histories OWNER TO postgres;
-
 --
--- Name: alert_histories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: alert_histories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.alert_histories_id_seq
@@ -113,17 +123,15 @@ CREATE SEQUENCE public.alert_histories_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.alert_histories_id_seq OWNER TO postgres;
-
 --
--- Name: alert_histories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: alert_histories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.alert_histories_id_seq OWNED BY public.alert_histories.id;
 
 
 --
--- Name: alert_rules; Type: TABLE; Schema: public; Owner: postgres
+-- Name: alert_rules; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.alert_rules (
@@ -133,14 +141,13 @@ CREATE TABLE public.alert_rules (
     action_interval public.action_interval NOT NULL,
     name character varying(127) NOT NULL,
     active boolean NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    delete boolean DEFAULT false
 );
 
 
-ALTER TABLE public.alert_rules OWNER TO postgres;
-
 --
--- Name: alert_tables_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: alert_tables_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.alert_tables_id_seq
@@ -152,17 +159,15 @@ CREATE SEQUENCE public.alert_tables_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.alert_tables_id_seq OWNER TO postgres;
-
 --
--- Name: alert_tables_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: alert_tables_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.alert_tables_id_seq OWNED BY public.alert_rules.id;
 
 
 --
--- Name: channels; Type: TABLE; Schema: public; Owner: postgres
+-- Name: channels; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.channels (
@@ -170,14 +175,13 @@ CREATE TABLE public.channels (
     rule_id bigint NOT NULL,
     user_id bigint NOT NULL,
     type character varying(10) NOT NULL,
-    token character varying(127) NOT NULL
+    token character varying(127) NOT NULL,
+    delete boolean DEFAULT false
 );
 
 
-ALTER TABLE public.channels OWNER TO postgres;
-
 --
--- Name: channels_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: channels_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.channels_id_seq
@@ -189,17 +193,15 @@ CREATE SEQUENCE public.channels_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.channels_id_seq OWNER TO postgres;
-
 --
--- Name: channels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: channels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.channels_id_seq OWNED BY public.channels.id;
 
 
 --
--- Name: code_blocks; Type: TABLE; Schema: public; Owner: postgres
+-- Name: code_blocks; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.code_blocks (
@@ -210,14 +212,13 @@ CREATE TABLE public.code_blocks (
     error_column_num integer NOT NULL,
     error_line_num integer NOT NULL,
     file_name character varying(255) NOT NULL,
-    stack character varying(255) NOT NULL
+    stack character varying(255) NOT NULL,
+    delete boolean DEFAULT false
 );
 
 
-ALTER TABLE public.code_blocks OWNER TO postgres;
-
 --
--- Name: code_blocks_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: code_blocks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.code_blocks_id_seq
@@ -229,17 +230,15 @@ CREATE SEQUENCE public.code_blocks_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.code_blocks_id_seq OWNER TO postgres;
-
 --
--- Name: code_blocks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: code_blocks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.code_blocks_id_seq OWNED BY public.code_blocks.id;
 
 
 --
--- Name: events; Type: TABLE; Schema: public; Owner: postgres
+-- Name: events; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.events (
@@ -262,14 +261,13 @@ CREATE TABLE public.events (
     up_time numeric(20,0) NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     fingerprints character varying(127) NOT NULL,
-    work_space_path character varying(255) NOT NULL
+    work_space_path character varying(255) NOT NULL,
+    delete boolean DEFAULT false
 );
 
 
-ALTER TABLE public.events OWNER TO postgres;
-
 --
--- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.events_id_seq
@@ -281,17 +279,15 @@ CREATE SEQUENCE public.events_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.events_id_seq OWNER TO postgres;
-
 --
--- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
 
 
 --
--- Name: policies; Type: TABLE; Schema: public; Owner: postgres
+-- Name: policies; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.policies (
@@ -303,10 +299,8 @@ CREATE TABLE public.policies (
 );
 
 
-ALTER TABLE public.policies OWNER TO postgres;
-
 --
--- Name: policies_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: policies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.policies_id_seq
@@ -318,17 +312,15 @@ CREATE SEQUENCE public.policies_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.policies_id_seq OWNER TO postgres;
-
 --
--- Name: policies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: policies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.policies_id_seq OWNED BY public.policies.id;
 
 
 --
--- Name: projects; Type: TABLE; Schema: public; Owner: postgres
+-- Name: projects; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.projects (
@@ -336,14 +328,13 @@ CREATE TABLE public.projects (
     framework character varying(50) NOT NULL,
     client_token character varying(255) NOT NULL,
     user_id bigint NOT NULL,
-    members bigint[]
+    members bigint[],
+    delete boolean DEFAULT false
 );
 
 
-ALTER TABLE public.projects OWNER TO postgres;
-
 --
--- Name: projects_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: projects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.projects_id_seq
@@ -355,17 +346,15 @@ CREATE SEQUENCE public.projects_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.projects_id_seq OWNER TO postgres;
-
 --
--- Name: projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.projects_id_seq OWNED BY public.projects.id;
 
 
 --
--- Name: request_info; Type: TABLE; Schema: public; Owner: postgres
+-- Name: request_info; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.request_info (
@@ -377,14 +366,13 @@ CREATE TABLE public.request_info (
     accept text NOT NULL,
     query_paras json,
     event_id bigint NOT NULL,
-    ip character varying(20)
+    ip character varying(20),
+    delete boolean DEFAULT false
 );
 
 
-ALTER TABLE public.request_info OWNER TO postgres;
-
 --
--- Name: request_info_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: request_info_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.request_info_id_seq
@@ -396,17 +384,15 @@ CREATE SEQUENCE public.request_info_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.request_info_id_seq OWNER TO postgres;
-
 --
--- Name: request_info_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: request_info_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.request_info_id_seq OWNED BY public.request_info.id;
 
 
 --
--- Name: source_maps; Type: TABLE; Schema: public; Owner: postgres
+-- Name: source_maps; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.source_maps (
@@ -414,14 +400,13 @@ CREATE TABLE public.source_maps (
     file_name character varying(255) NOT NULL,
     project_id bigint NOT NULL,
     version integer NOT NULL,
-    hash_value character varying(255) NOT NULL
+    hash_value character varying(255) NOT NULL,
+    delete boolean DEFAULT false
 );
 
 
-ALTER TABLE public.source_maps OWNER TO postgres;
-
 --
--- Name: source_maps_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: source_maps_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.source_maps_id_seq
@@ -433,17 +418,15 @@ CREATE SEQUENCE public.source_maps_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.source_maps_id_seq OWNER TO postgres;
-
 --
--- Name: source_maps_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: source_maps_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.source_maps_id_seq OWNED BY public.source_maps.id;
 
 
 --
--- Name: trigger_types; Type: TABLE; Schema: public; Owner: postgres
+-- Name: trigger_types; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.trigger_types (
@@ -452,10 +435,8 @@ CREATE TABLE public.trigger_types (
 );
 
 
-ALTER TABLE public.trigger_types OWNER TO postgres;
-
 --
--- Name: triggers; Type: TABLE; Schema: public; Owner: postgres
+-- Name: triggers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.triggers (
@@ -463,14 +444,13 @@ CREATE TABLE public.triggers (
     rule_id bigint NOT NULL,
     threshold character varying(10),
     time_window public.action_interval,
-    id integer NOT NULL
+    id integer NOT NULL,
+    delete boolean DEFAULT false
 );
 
 
-ALTER TABLE public.triggers OWNER TO postgres;
-
 --
--- Name: triggers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: triggers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.triggers_id_seq
@@ -482,17 +462,15 @@ CREATE SEQUENCE public.triggers_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.triggers_id_seq OWNER TO postgres;
-
 --
--- Name: triggers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: triggers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.triggers_id_seq OWNED BY public.trigger_types.id;
 
 
 --
--- Name: triggers_id_seq1; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: triggers_id_seq1; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.triggers_id_seq1
@@ -504,17 +482,15 @@ CREATE SEQUENCE public.triggers_id_seq1
     CACHE 1;
 
 
-ALTER SEQUENCE public.triggers_id_seq1 OWNER TO postgres;
-
 --
--- Name: triggers_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: triggers_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.triggers_id_seq1 OWNED BY public.triggers.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.users (
@@ -527,10 +503,8 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO postgres;
-
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.users_id_seq
@@ -542,101 +516,99 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
-
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: alert_histories id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: alert_histories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.alert_histories ALTER COLUMN id SET DEFAULT nextval('public.alert_histories_id_seq'::regclass);
 
 
 --
--- Name: alert_rules id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: alert_rules id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.alert_rules ALTER COLUMN id SET DEFAULT nextval('public.alert_tables_id_seq'::regclass);
 
 
 --
--- Name: channels id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: channels id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.channels ALTER COLUMN id SET DEFAULT nextval('public.channels_id_seq'::regclass);
 
 
 --
--- Name: code_blocks id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: code_blocks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.code_blocks ALTER COLUMN id SET DEFAULT nextval('public.code_blocks_id_seq'::regclass);
 
 
 --
--- Name: events id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: events id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
 
 
 --
--- Name: policies id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: policies id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.policies ALTER COLUMN id SET DEFAULT nextval('public.policies_id_seq'::regclass);
 
 
 --
--- Name: projects id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: projects id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.projects ALTER COLUMN id SET DEFAULT nextval('public.projects_id_seq'::regclass);
 
 
 --
--- Name: request_info id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: request_info id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.request_info ALTER COLUMN id SET DEFAULT nextval('public.request_info_id_seq'::regclass);
 
 
 --
--- Name: source_maps id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: source_maps id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.source_maps ALTER COLUMN id SET DEFAULT nextval('public.source_maps_id_seq'::regclass);
 
 
 --
--- Name: trigger_types id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: trigger_types id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.trigger_types ALTER COLUMN id SET DEFAULT nextval('public.triggers_id_seq'::regclass);
 
 
 --
--- Name: triggers id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: triggers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.triggers ALTER COLUMN id SET DEFAULT nextval('public.triggers_id_seq1'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
--- Name: alert_histories alert_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: alert_histories alert_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.alert_histories
@@ -644,7 +616,7 @@ ALTER TABLE ONLY public.alert_histories
 
 
 --
--- Name: alert_rules alert_tables_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: alert_rules alert_tables_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.alert_rules
@@ -652,7 +624,7 @@ ALTER TABLE ONLY public.alert_rules
 
 
 --
--- Name: channels channels_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: channels channels_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.channels
@@ -660,7 +632,7 @@ ALTER TABLE ONLY public.channels
 
 
 --
--- Name: code_blocks code_blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: code_blocks code_blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.code_blocks
@@ -668,7 +640,7 @@ ALTER TABLE ONLY public.code_blocks
 
 
 --
--- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.events
@@ -676,7 +648,7 @@ ALTER TABLE ONLY public.events
 
 
 --
--- Name: policies policies_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: policies policies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.policies
@@ -684,7 +656,7 @@ ALTER TABLE ONLY public.policies
 
 
 --
--- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.projects
@@ -692,7 +664,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- Name: request_info request_info_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: request_info request_info_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.request_info
@@ -700,7 +672,7 @@ ALTER TABLE ONLY public.request_info
 
 
 --
--- Name: source_maps source_maps_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: source_maps source_maps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.source_maps
@@ -708,7 +680,7 @@ ALTER TABLE ONLY public.source_maps
 
 
 --
--- Name: trigger_types triggers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: trigger_types triggers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.trigger_types
@@ -716,7 +688,7 @@ ALTER TABLE ONLY public.trigger_types
 
 
 --
--- Name: triggers triggers_pkey1; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: triggers triggers_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.triggers
@@ -724,7 +696,7 @@ ALTER TABLE ONLY public.triggers
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -732,7 +704,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -740,7 +712,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: alert_histories alert_histories_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: alert_histories alert_histories_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.alert_histories
@@ -748,7 +720,7 @@ ALTER TABLE ONLY public.alert_histories
 
 
 --
--- Name: channels channels_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: channels channels_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.channels
@@ -756,7 +728,7 @@ ALTER TABLE ONLY public.channels
 
 
 --
--- Name: events events_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: events events_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.events
@@ -764,7 +736,7 @@ ALTER TABLE ONLY public.events
 
 
 --
--- Name: events events_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: events events_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.events
@@ -772,7 +744,7 @@ ALTER TABLE ONLY public.events
 
 
 --
--- Name: projects projects_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: projects projects_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.projects
@@ -780,7 +752,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- Name: request_info request_info_event_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: request_info request_info_event_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.request_info
@@ -788,7 +760,7 @@ ALTER TABLE ONLY public.request_info
 
 
 --
--- Name: source_maps source_maps_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: source_maps source_maps_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.source_maps
@@ -796,7 +768,7 @@ ALTER TABLE ONLY public.source_maps
 
 
 --
--- Name: triggers trigger_rule_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: triggers trigger_rule_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.triggers
