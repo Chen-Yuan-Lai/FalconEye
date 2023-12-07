@@ -19,6 +19,8 @@ const cronTable = {
   '1w': 'cron(0 0 ? * 1 *)',
 };
 
+console.log(process.env.AWS_REGION);
+
 const client = new EventBridgeClient({
   region: process.env.AWS_REGION,
   credentials: {
