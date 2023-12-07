@@ -42,7 +42,6 @@ app.use(cookieParser());
 
 // static file
 app.use(express.static(path.join(__dirname, 'public')));
-// Serve the React application from the 'dist' directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use(compression());

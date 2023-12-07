@@ -172,6 +172,7 @@ export const getIssues = async (userId, queryParams) => {
   const queryStr = `SELECT 
                       e.name,
                       e.status,
+                      e.fingerprints,
                       p.id as project_id,
                       p.framework as project_framework,
                       AGE(NOW(), MAX(e.created_at)) AS latest_seen,

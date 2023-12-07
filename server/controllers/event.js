@@ -3,6 +3,7 @@ import locateMap from '../utils/locateMap.js';
 import * as sourceMapModel from '../models/sourceMap.js';
 import * as eventModel from '../models/event.js';
 import s3 from '../utils/S3.js';
+import { PAGE_SIZE } from './alert.js';
 import AppError from '../utils/appError.js';
 
 export const createEvent = async (req, res, next) => {
@@ -62,7 +63,7 @@ export const createEvent = async (req, res, next) => {
       const keyString = newestMap.file_name;
 
       // pull source map file from S3
-      const bucketName = process.env.S3_BUCKET_NAME;
+      const bucketName = process.env.AWS_NAME;
       const params = {
         Bucket: bucketName,
         Key: keyString,
@@ -146,6 +147,28 @@ export const getEventsByUserId = async (req, res, next) => {
     res.status(200).json({
       status: 'get events successfully',
       data: events,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+export const getEventByFingerprints = async (req, res, next) => {
+  try {
+    const { fingerprints } = req.params;
+    const page = req.query.page || 1;
+
+    const offsetValue = (page - 1) * PAGE_SIZE;
+
+    const events = await eventModel.getEventsByFingerprints(fingerprints, PAGE_SIZE, offsetValue);
+    const totalPage = Math.ceil(events.totalCount / PAGE_SIZE);
+
+    res.status(200).json({
+      data: events.rows,
+      total: events.totalCount,
+      nextPage: totalPage < page + 1 ? null : page + 1,
+      previousPage: page - 1 < 1 ? null : page - 1,
     });
   } catch (err) {
     console.error(err);

@@ -16,6 +16,15 @@ export const createChannels = async (client, ruleId, channels) => {
 
 export const getChannel = async () => {};
 
-export const deleteChannel = async () => {};
+export const deleteChannel = async (client, ruleId) => {
+  const query = {
+    text: `DELETE FROM channels WHERE rule_id = $1 RETURNING *`,
+    values: [ruleId],
+  };
+
+  const res = await client.query(query);
+
+  return res.rows[0];
+};
 
 export const updateChannel = async () => {};

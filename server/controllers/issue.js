@@ -22,8 +22,6 @@ export const getEventsByIssue = async (req, res, next) => {
   try {
     const issue = await eventModel.getEventsByIssue(req.query);
 
-    if (!issue) return next(new AppError('issues not found', 404));
-
     res.status(200).json({
       data: issue,
     });
@@ -32,6 +30,7 @@ export const getEventsByIssue = async (req, res, next) => {
     next(err);
   }
 };
+
 
 export const updateIssue = async (req, res, next) => {
   try {

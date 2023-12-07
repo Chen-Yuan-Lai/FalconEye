@@ -31,3 +31,14 @@ export const getTriggerTypes = async () => {
   const res = await pool.query(query);
   return res.rows;
 };
+
+export const deleteTrigger = async (client, ruleId) => {
+  const query = {
+    text: `DELETE FROM triggers WHERE rule_id = $1 RETURNING *`,
+    values: [ruleId],
+  };
+
+  const res = await client.query(query);
+
+  return res.rows[0];
+};

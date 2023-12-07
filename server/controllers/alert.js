@@ -3,13 +3,20 @@ import * as ChannelModel from '../models/channel.js';
 import * as TriggerModel from '../models/trigger.js';
 import pool from '../models/databasePool.js';
 import AppError from '../utils/appError.js';
-import { sendMessage, connectProducer } from '../job/kafka.js';
+// import { sendMessage, connectProducer } from '../job/kafka.js';
+import {
+  createRule,
+  createTarget,
+  deleteRule,
+  disableRule,
+  enableRule,
+} from '../job/eventBridge.js';
 import setCronJob from '../utils/cronJob.js';
 
 export const PAGE_SIZE = 6;
 
-const jobs = {};
-await connectProducer();
+// const jobs = {};
+// await connectProducer();
 
 // todo
 export const createAlert = async (req, res, next) => {
@@ -29,20 +36,25 @@ export const createAlert = async (req, res, next) => {
     const ruleId = alertRes.id;
     const triggerRes = await TriggerModel.createTriggers(client, ruleId, triggers);
     const channelRes = await ChannelModel.createChannels(client, ruleId, channels);
+
+    const eventBridgeRes = await createRule(ruleId, actionInterval);
+    const targetRes = await createTarget(ruleId);
     await client.query('COMMIT');
 
-    const job = setCronJob(actionInterval, async () => {
-      await sendMessage('notification', `${ruleId}`);
-    });
+    // const job = setCronJob(actionInterval, async () => {
+    //   await sendMessage('notification', `${ruleId}`);
+    // });
 
-    jobs[ruleId] = job;
-    console.log(jobs);
+    // jobs[ruleId] = job;
+    // console.log(jobs);
 
     res.status(200).json({
       data: {
         alertRes,
         triggerRes,
         channelRes,
+        eventBridgeRes,
+        targetRes,
       },
     });
   } catch (err) {
@@ -102,28 +114,38 @@ export const getAlert = async (req, res, next) => {
 
 export const updateAlert = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id: ruleId } = req.params;
     const fields = req.body;
 
-    const updateRes = await AlertModel.updateAlert(id, fields);
+    const updateRes = await AlertModel.updateAlert(ruleId, fields);
 
     // create a job
-    if (updateRes.active && !jobs[updateRes.id]) {
-      const job = setCronJob(updateRes.action_interval, async () => {
-        await sendMessage('notification', `${updateRes.id}`);
-      });
+    // if (updateRes.active && !jobs[updateRes.id]) {
+    //   const job = setCronJob(updateRes.action_interval, async () => {
+    //     await sendMessage('notification', `${updateRes.id}`);
+    //   });
 
-      jobs[updateRes.id] = job;
-    }
-    // delete a job
-    if (!updateRes.active && jobs[updateRes.id]) {
-      jobs[updateRes.id].cancel();
+    //   jobs[updateRes.id] = job;
+    // }
+    // // delete a job
+    // if (!updateRes.active && jobs[updateRes.id]) {
+    //   jobs[updateRes.id].cancel();
 
-      delete jobs[updateRes.id];
+    //   delete jobs[updateRes.id];
+    // }
+
+    let eventBridgeRes;
+    if (updateRes.active) {
+      eventBridgeRes = await enableRule(ruleId);
+    } else {
+      eventBridgeRes = await disableRule(ruleId);
     }
 
     res.status(200).json({
-      data: updateRes,
+      data: {
+        updateRes,
+        eventBridgeRes,
+      },
     });
   } catch (err) {
     console.error(err);
@@ -135,12 +157,20 @@ export const deleteAlert = async (req, res, next) => {
   const client = await pool.connect();
   try {
     client.query('BEGIN');
-    const ruleId = req.query;
+    const { id: ruleId } = req.params;
+    const channelRes = await ChannelModel.deleteChannel(client, ruleId);
+    const triggerRes = await TriggerModel.deleteTrigger(client, ruleId);
     const alertRes = await AlertModel.deleteAlert(client, ruleId);
+    const eventBridgeRes = await deleteRule(ruleId);
 
     client.query('COMMIT');
     res.status(200).json({
-      data: alertRes,
+      data: {
+        alertRes,
+        channelRes,
+        triggerRes,
+        eventBridgeRes,
+      },
     });
   } catch (err) {
     console.error(err);
