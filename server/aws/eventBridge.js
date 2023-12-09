@@ -49,7 +49,7 @@ export const createTarget = async ruleId => {
       {
         Id: 'kafka-producer',
         Arn: 'arn:aws:lambda:ap-southeast-2:044551082685:function:eventBridge-lambda',
-        Input: JSON.stringify({ ruleId: `${ruleId}` }),
+        Input: JSON.stringify({ ruleId }),
       },
     ],
   };

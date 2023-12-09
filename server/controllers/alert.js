@@ -77,15 +77,15 @@ export const getAlerts = async (req, res, next) => {
     const offsetValue = (page - 1) * PAGE_SIZE;
 
     const alerts = await AlertModel.getAlerts(projectId, PAGE_SIZE, offsetValue);
-    if (alerts.length === 0) {
-      return next(new AppError('alert not found', 404));
+    let totalPage = 0;
+    if (alerts.length !== 0) {
+      totalPage = Math.ceil(Number(alerts[0].total_count) / PAGE_SIZE);
     }
 
-    const totalPage = Math.ceil(Number(alerts[0].total_count) / PAGE_SIZE);
     res.status(200).json({
       data: alerts,
       totalPage,
-      nextPage: page + 1 >= totalPage ? page : page + 1,
+      nextPage: (page + 1 && totalPage) >= totalPage ? page : page + 1,
     });
   } catch (err) {
     console.error(err);

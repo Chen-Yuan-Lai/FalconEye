@@ -2,16 +2,17 @@ import { v4 as uuidv4 } from 'uuid';
 import pool from './databasePool.js';
 import format from 'pg-format';
 
-export const createProject = async (framework, userId) => {
+export const createProject = async (framework, userId, name) => {
   const uuid = uuidv4();
   const query = {
     text: `INSERT INTO projects(
               framework, 
               user_id,
               client_token,
+              name,
               members) 
-            VALUES($1, $2, $3, $4) RETURNING *`,
-    values: [framework, userId, uuid, [userId]],
+            VALUES($1, $2, $3, $4, $5) RETURNING *`,
+    values: [framework, userId, uuid, name, [userId]],
   };
 
   const res = await pool.query(query);
@@ -21,13 +22,16 @@ export const createProject = async (framework, userId) => {
 export const checkProject = async (userKey, clientToken) => {
   const query = {
     text: `SELECT
-              users.id AS user_id,
-              projects.id AS project_id 
-          FROM users 
+              u.id AS user_id,
+              p.id AS project_id 
+          FROM 
+              users AS u
           LEFT JOIN 
-              projects ON users.id = projects.user_id 
-          WHERE user_key = $1
-                AND client_token = $2`,
+              projects AS p ON u.id = p.user_id 
+          WHERE 
+              user_key = $1
+              AND u.client_token = $2
+              AND p.delete = false`,
     values: [userKey, clientToken],
   };
   const res = await pool.query(query);
@@ -36,7 +40,7 @@ export const checkProject = async (userKey, clientToken) => {
 
 export const deleteProject = async projectId => {
   const query = {
-    text: `DELETE FROM projects WHERE id = $1`,
+    text: `UPDATE FROM projects SET delete = true WHERE id = $1`,
     values: [projectId],
   };
   const res = await pool.query(query);
@@ -45,7 +49,7 @@ export const deleteProject = async projectId => {
 
 export const findProject = async clientToken => {
   const query = {
-    text: 'SELECT * FROM projects WHERE client_token = $1',
+    text: 'SELECT * FROM projects WHERE client_token = $1 AND delete = false',
     values: [clientToken],
   };
   const res = await pool.query(query);
@@ -60,7 +64,8 @@ export const checkMemberByProjectId = async (userId, projectId) => {
               projects
           WHERE 
               $1 = ANY(members)
-              AND id = $2`,
+              AND id = $2
+              AND delete = false`,
     values: [userId, projectId],
   };
   const res = await pool.query(query);
@@ -69,7 +74,10 @@ export const checkMemberByProjectId = async (userId, projectId) => {
 
 export const updateProjectMember = async (userId, projectId, action) => {
   const arrFun = action === 'add' ? 'ARRAY_APPEND' : 'ARRAY_REMOVE';
-  const queryStr = format(`UPDATE projects SET members = %s(members, $1) WHERE id = $2`, arrFun);
+  const queryStr = format(
+    `UPDATE projects SET members = %s(members, $1) WHERE id = $2 AND delete = false`,
+    arrFun,
+  );
   const query = {
     text: queryStr,
     values: [userId, projectId],
@@ -86,9 +94,11 @@ export const getProjectsByMembers = async userId => {
           FROM 
               projects AS p
           LEFT JOIN
-              events AS e ON e.project_id = p.id 
+              events AS e 
+              ON e.project_id = p.id 
           WHERE 
               $1 = ANY(members)
+              AND p.delete = false
           GROUP BY
               p.id`,
     values: [userId],
@@ -99,7 +109,7 @@ export const getProjectsByMembers = async userId => {
 
 export const getProject = async projectId => {
   const query = {
-    text: 'SELECT * FROM projects WHERE id = $1',
+    text: 'SELECT * FROM projects WHERE id = $1 AND delete = false',
     values: [projectId],
   };
 
@@ -118,7 +128,8 @@ export const getErrorsPerHoursByProjectId = async (projectId, bin, interval) => 
       LEFT JOIN
         events AS e ON e.created_at >= series.hour
         AND e.created_at < series.hour + INTERVAL %L
-        AND e.project_id = $1          
+        AND e.project_id = $1
+        AND e.delete = false       
       GROUP BY
         series.hour
       ORDER BY
@@ -189,6 +200,7 @@ export const getIssues = async (userId, queryParams) => {
                       request_info AS r ON r.event_id = e.id 
                     WHERE 
                       $1 = ANY(p.members)
+                      AND p.delete = false
                       ${project}
                       ${statsPeriod}
                       ${status}

@@ -13,14 +13,16 @@ import authenticate from '../middlewares/authenticate.js';
 const router = Router();
 // await connectProducer();
 
+router.use(authenticate);
+
 // todo
 router.route('/alert/:id').get(getAlert).patch(updateAlert).delete(deleteAlert);
 router
-  .route('/alerts', authenticate)
+  .route('/alerts')
   .get(query('projectId').optional({ checkFalsy: false }).trim().isInt(), handleResult, getAlerts);
 
 router
-  .route('/alert', authenticate)
+  .route('/alert')
   .post([
     query('projectId').exists().notEmpty().trim(),
     body('triggers').exists().notEmpty().isArray().withMessage('Triggers must be an array'),
@@ -70,7 +72,5 @@ router
     handleResult,
     createAlert,
   ]);
-
-router.route('/alerts', authenticate).get(getAlerts);
 
 export default router;

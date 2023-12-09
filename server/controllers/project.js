@@ -5,8 +5,8 @@ import AppError from '../utils/appError.js';
 export const createProject = async (req, res, next) => {
   try {
     const userId = res.locals.userId;
-    const { framework } = req.body;
-    const project = await ProjectModel.createProject(framework, userId);
+    const { framework, name } = req.body;
+    const project = await ProjectModel.createProject(framework, userId, name);
 
     res.status(200).json({
       data: project,
