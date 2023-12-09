@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Layout, Spin, Select, Card } from 'antd';
+import { Layout, Spin, Select, Card, Switch } from 'antd';
 import { Area } from '@ant-design/plots';
 import CusFooter from '../components/footer.jsx';
-import { getAlert } from '../utils/fetchData.js';
+import { getAlert, updateAlert } from '../utils/fetchData.js';
 import '../css/page.css';
 
 const { Content, Header } = Layout;
@@ -27,6 +27,7 @@ const AlertArea = ({ alertTriggeredPerHour }) => {
 export default function Alert() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
+  const [switchLoading, setSwitchLoading] = useState(true);
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
   const [alertsTriggeredPerHour, setAlertsTriggeredPerHour] = useState(null);
@@ -35,6 +36,18 @@ export default function Alert() {
   const handleChange = value => {
     console.log(`selected ${value}`);
     setStatPeriod(value);
+  };
+
+  const onChange = async checked => {
+    setSwitchLoading(true);
+    const jwt = localStorage.getItem('jwt');
+    try {
+      console.log(`switch to ${checked}`);
+      await updateAlert(jwt, id, checked);
+      setSwitchLoading(false);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   const navigate = useNavigate();
@@ -50,7 +63,8 @@ export default function Alert() {
         }
         const { data } = await getAlert(jwt, id, statPeriod);
         setAlert(data.alert);
-        console.log(data.alertTriggeredPerHour);
+        setSwitchLoading(false);
+        console.log(data);
         setAlertsTriggeredPerHour(data.alertTriggeredPerHour);
       } catch (err) {
         console.error('Error fetching project details:', err);
@@ -69,13 +83,21 @@ export default function Alert() {
         {loading ? (
           <Spin />
         ) : (
-          <div className="flex flex-row gap-5">
+          <div className="flex flex-row justify-between items-center">
             <h1>{alert.name}</h1>
+            <Switch
+              loading={switchLoading}
+              checkedChildren="Active"
+              unCheckedChildren="Muted"
+              defaultChecked={alert.active}
+              onChange={onChange}
+              disabled={alert.active === null}
+            />
           </div>
         )}
       </Header>
       <Content
-        className="px-10 min-h-[75vh]"
+        className="px-10 min-h-[75vh] p-5"
         style={{ border: '1px solid #d1d5db', overflow: 'initial' }}
       >
         <Select

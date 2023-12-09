@@ -157,3 +157,20 @@ export const getAlert = async (jwt, ruleId, interval = null) => {
   }
   return await res.json();
 };
+
+export const updateAlert = async (jwt, ruleId, active) => {
+  headers.Authorization = `Bearer ${jwt}`;
+  let url = `${host}alert/${ruleId}`;
+  const body = JSON.stringify({
+    active,
+  });
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers,
+    body,
+  });
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  return await res.json();
+};

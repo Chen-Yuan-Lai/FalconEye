@@ -60,7 +60,7 @@ export const getAlert = async alertId => {
   const query = {
     text: `
           SELECT
-              name
+              *
           FROM
               alert_rules
           WHERE
