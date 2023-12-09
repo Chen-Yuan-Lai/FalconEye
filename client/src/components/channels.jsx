@@ -2,10 +2,9 @@ import { v4 as uuid } from 'uuid';
 import { RiDeleteBin5Line } from 'react-icons/ri';
 import { Input, Spin } from 'antd';
 
-const ChannelDropdowns = ({ handleSelect, handleDelete, dropdowns, options, loading }) => {
-  return loading ? (
-    <Spin />
-  ) : (
+const ChannelDropdowns = ({ handleSelect, handleDelete, dropdowns, options }) => {
+  const o = options.emails;
+  return (
     <>
       {dropdowns.map((dropdown, i) => (
         <div
@@ -21,9 +20,9 @@ const ChannelDropdowns = ({ handleSelect, handleDelete, dropdowns, options, load
             <option value="" disabled>
               Add a member in the project...
             </option>
-            {options.map(el => (
+            {o.map(el => (
               <option value={el.value} key={uuid()}>
-                {el.text}
+                {el.label}
               </option>
             ))}
           </select>

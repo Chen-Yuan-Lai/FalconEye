@@ -9,3 +9,36 @@
   border-radius: 16px;
   padding: 10px 16px 16px 16px;
 }
+
+.custom-radio-group .ant-radio-button-wrapper {
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  text-align: center;
+  min-width: 6rem; /* Adjust as needed */
+  min-height: 6rem; /* Adjust as needed */
+  padding: 5px; /* Adjust for proper alignment */
+  line-height: 40px;
+}
+
+/* Override styles for the checked state */
+.custom-radio-group .ant-radio-button-wrapper-checked,
+.custom-radio-group .ant-radio-button-wrapper-checked:hover,
+.custom-radio-group .ant-radio-button-wrapper-checked:focus {
+  /* Your custom styles for checked state */
+  border-color: #d9d9d9 !important;
+  box-shadow: none !important;
+}
+
+.custom-radio-group .ant-radio-button-wrapper-checked {
+  background-color: rgb(202, 196, 196);
+  border: none;
+}
+
+/* Override styles for focus state */
+.custom-radio-group .ant-radio-button-wrapper:focus,
+.custom-radio-group .ant-radio-button-wrapper:focus-visible {
+  /* Your custom styles for focus state */
+  outline: none !important;
+  box-shadow: none !important;
+}

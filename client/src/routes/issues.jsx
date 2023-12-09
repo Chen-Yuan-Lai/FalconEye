@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLoaderData, useParams, useNavigate, Link, redirect } from 'react-router-dom';
-import { Layout, Table, Tag } from 'antd';
+import { Layout, Table, Tag, Space } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import IssueSelect from '../components/issueSelect.jsx';
 import '../css/page.css';
@@ -80,6 +80,7 @@ export async function loader() {
 
     return projectNames;
   } catch (err) {
+    console.error(err);
     alert('Please sign in first');
     return redirect('/signin');
   }

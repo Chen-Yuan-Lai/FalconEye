@@ -1,7 +1,7 @@
-import { useState, useEffects, useEffect } from 'react';
+import { useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import { useLoaderData, redirect, Form, useNavigate } from 'react-router-dom';
-import { Layout, Steps, Button, Input } from 'antd';
+import { useLoaderData, redirect, Form, Link } from 'react-router-dom';
+import { Layout, Button, Input } from 'antd';
 import {
   getUser,
   getProjects,
@@ -13,13 +13,13 @@ import { When, Then } from '../components/conditions.jsx';
 import TriggersDropdowns from '../components/triggers.jsx';
 import ChannelDropdowns from '../components/channels.jsx';
 import CusFooter from '../components/footer.jsx';
+import FormStep from '../components/formSteps.jsx';
 
 const { Content, Header } = Layout;
 
 export async function action({ request }) {
   try {
     const jwt = localStorage.getItem('jwt');
-    await getUser(jwt);
 
     const formData = await request.formData();
     const alertData = Object.fromEntries(formData);
@@ -74,7 +74,7 @@ export async function action({ request }) {
     }
 
     alert('create an alert successfully');
-    return null;
+    return redirect('/alerts');
   } catch (error) {
     alert(error);
     return null;
@@ -86,14 +86,28 @@ export async function loader() {
     const jwt = localStorage.getItem('jwt');
     await getUser(jwt);
 
-    const { data: projectsData } = await getProjects(jwt);
+    const { data: projects } = await getProjects(jwt);
     const { data: triggersTypesData } = await getTriggersTypes(jwt);
 
-    const projects = projectsData?.map(el => ({ value: el.id, text: `${el.framework}-${el.id}` }));
+    const emailPromises = [];
+    projects.forEach(el => {
+      emailPromises.push(getProjectMembers(jwt, el.id));
+    });
+
+    const emails = (await Promise.all(emailPromises)).map(el => el.data);
+
+    const projectsMembers = projects.map((el, i) => ({
+      id: el.id,
+      emails: emails[i].map(el => ({ value: el.id, label: el.email })),
+    }));
+
+    console.log(projectsMembers);
+
     const triggersTypes = triggersTypesData?.map(el => ({ value: el.id, text: el.description }));
 
     return {
       projects,
+      projectsMembers,
       triggersTypes,
     };
   } catch (err) {
@@ -113,52 +127,27 @@ const filters = [
   },
 ];
 
-const AlertTitle = ({ num, text }) => (
-  <div className="flex flex-row gap-4">
-    <span className="flex justify-center items-center rounded-full bg-yellow-500 text-black h-8 w-8 p-1 text-center align-middle font-mono font-semibold">
-      {num}
-    </span>
-    <h2>{text}</h2>
-  </div>
-);
-
 export default function CreateAlert() {
   const data = useLoaderData();
-  const navigate = useNavigate();
   const projects = data.projects;
+  const members = data.projectsMembers;
   const triggersTypes = data.triggersTypes;
 
-  const [projectMembers, setProjectMembers] = useState(null);
-  const [project, setProject] = useState(projects[0].value);
+  const [projectMembers, setProjectMembers] = useState(members[0]);
+  const [project, setProject] = useState(projects[0]);
   const [triggers, setTriggers] = useState([{ id: uuid(), value: null }]);
   const [channels, setChannels] = useState([{ id: uuid(), value: null }]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const jwt = localStorage.getItem('jwt');
-      if (!jwt) {
-        alert('Please log in first');
-        navigate('/signin');
-        return;
-      }
-      try {
-        const { data } = await getProjectMembers(jwt, project);
-        const members = data.map(el => ({ value: el.id, text: el.email }));
-        setProjectMembers(members);
-      } catch (err) {
-        console.error(err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [project]);
+  const handleProjectSelect = event => {
+    const value = +event.target.value;
+    console.log(value);
 
-  const handleProjectSelect = value => setProject(value);
+    const project = projects.find(el => el.id === value);
+    const emails = members.find(el => +el.id === value);
+    console.log(project, emails);
+    setProject(project);
+    setProjectMembers(emails);
+  };
 
   const handleTriggerSelect = (value, id) => {
     const newTriggers = triggers.map(trigger => (trigger.id === id ? { id, value } : trigger));
@@ -189,23 +178,24 @@ export default function CreateAlert() {
       >
         <Form method="post" className="flex flex-col gap-y-10">
           <div className="flex flex-col justify-between gap-y-2">
-            <AlertTitle num={1} text={'Select a project'} />
+            <FormStep num={1} text={'Select a project'} />
             <div className="ml-10 text-[16px]">
               <select
                 name="projectId"
+                value={project.id}
                 onChange={handleProjectSelect}
                 className="block w-[30%] border-gray-300 py-1 px-4 rounded-lg leading-tight focus:outline-none focus:border-blue-900 focus: border-2"
               >
                 {projects.map(el => (
-                  <option value={el.value} key={uuid()}>
-                    {el.text}
+                  <option value={el.id} key={el.id}>
+                    {el.name}
                   </option>
                 ))}
               </select>
             </div>
           </div>
           <div className="flex flex-col justify-between gap-y-2">
-            <AlertTitle num={2} text={'Set conditions'} />
+            <FormStep num={2} text={'Set conditions'} />
             <div
               className="flex flex-col mt-3 gap-3 p-4 rounded-lg ml-10 text-[16px]"
               style={{ border: '1.5px solid #d1d5db' }}
@@ -223,12 +213,11 @@ export default function CreateAlert() {
                 handleDelete={handleChannelDelete}
                 dropdowns={channels}
                 options={projectMembers}
-                loading={loading}
               />
             </div>
           </div>
           <div className="flex flex-col justify-between gap-y-2">
-            <AlertTitle num={3} text={'Set action interval'} />
+            <FormStep num={3} text={'Set action interval'} />
             <div className="ml-10 text-[16px]">
               <select
                 name="actionInterval"
@@ -245,16 +234,16 @@ export default function CreateAlert() {
             </div>
           </div>
           <div className="flex flex-col justify-between gap-y-2">
-            <AlertTitle num={4} text={'Add a name'} />
+            <FormStep num={4} text={'Add a name'} />
             <Input
               name="name"
               className="ml-10 text-[16px] w-[30%] border-gray-300 py-1 px-4 rounded-lg leading-tight focus:outline-none focus:border-blue-900 focus: border-2"
             />
           </div>
           <div className="flex flex-row items-center justify-end gap-x-3">
-            <Button type="primary" htmlType="submit">
-              cancel
-            </Button>
+            <Link to={'/alerts'}>
+              <Button type="primary">cancel</Button>
+            </Link>
             <Button type="primary" htmlType="submit">
               Save
             </Button>

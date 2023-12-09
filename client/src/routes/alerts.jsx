@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLoaderData, useNavigate, Link, redirect } from 'react-router-dom';
-import { Layout, Table } from 'antd';
+import { Layout, Table, Button } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import '../css/page.css';
 import { getAlerts, getProjects } from '../utils/fetchData.js';
@@ -38,7 +38,7 @@ export async function loader() {
     const projectNames = data.map(el => {
       const project = {
         value: el.id,
-        label: `${el.framework} ${el.id}`,
+        label: el.name,
       };
       return project;
     });
@@ -111,7 +111,14 @@ export default function Alerts() {
   return (
     <Layout className="site-layout flex flex-col min-h-screen">
       <Header className="bg-white h-[15vh]">
-        <h1>Alerts</h1>
+        <div className="flex flex-row justify-between items-center">
+          <h1>Alerts</h1>
+          <Link to={'/alerts/new'}>
+            <Button type="primary" className="bg-slate-800 text-white">
+              Create a new alert
+            </Button>
+          </Link>
+        </div>
       </Header>
       <Content
         className="px-10 min-h-[75vh]"
@@ -123,6 +130,7 @@ export default function Alerts() {
           handleProjectIdChange={handleProjectIdChange}
           handleStatusChange={handleStatusChange}
           projectNames={projectNames}
+          loading={loading}
         />
         <Table loading={loading} className="mt-3" columns={columns} dataSource={alerts} />
       </Content>

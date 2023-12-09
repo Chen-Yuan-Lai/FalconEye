@@ -77,6 +77,24 @@ export const getProjectMembers = async (jwt, projectId) => {
   return await res.json();
 };
 
+export const createProject = async (jwt, framework, name) => {
+  headers.Authorization = `Bearer ${jwt}`;
+  let url = `${host}project/`;
+  const body = JSON.stringify({
+    framework,
+    name,
+  });
+  const res = await fetch(url, {
+    method: 'POST',
+    headers,
+    body,
+  });
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  return await res.json();
+};
+
 export const getEvent = async (jwt, eventIds) => {
   headers.Authorization = `Bearer ${jwt}`;
   const query = eventIds.map(el => `id=${el}`).join('&');
@@ -122,7 +140,7 @@ export const createAlert = async (jwt, projectId, data) => {
 
 export const getAlerts = async (jwt, projectId) => {
   headers.Authorization = `Bearer ${jwt}`;
-  const url = `${host}alerts?projectId=${projectId}`;
+  const url = `${host}alerts${projectId ? `?projectId=${projectId}` : ''}`;
   const res = await fetch(url, { headers });
   if (!res.ok && `${res.status}`.startsWith('4')) {
     return null;

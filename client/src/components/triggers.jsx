@@ -3,6 +3,7 @@ import { RiDeleteBin5Line } from 'react-icons/ri';
 import { Input } from 'antd';
 
 const TriggersDropdowns = ({ handleSelect, handleDelete, dropdowns, options }) => {
+  console.log(options);
   return (
     <>
       {dropdowns.map((dropdown, i) => (
@@ -25,7 +26,7 @@ const TriggersDropdowns = ({ handleSelect, handleDelete, dropdowns, options }) =
               </option>
             ))}
           </select>
-          {dropdown.value && +dropdown.value > 10 && (
+          {dropdown.value && +dropdown.value > 1 && (
             <div className="w-full h-full flex flex-row items-center gap-x-4 p-2">
               <Input
                 name={`trigger-${i}-threshold`}

@@ -6,12 +6,20 @@ export default function AlertSelect({
   handleProjectIdChange,
   handleStatusChange,
   projectNames,
+  loading,
 }) {
-  const v = projectNames.find(el => el.value === projectId);
+  let selectedProjectLabel = '';
+  if (projectNames && projectNames.length > 0) {
+    const selectedProject = projectNames.find(el => el.value === projectId);
+    if (selectedProject) {
+      selectedProjectLabel = selectedProject.label;
+    }
+  }
   return (
     <div className="flex flex-row gap-2 mt-3">
       <Select
-        value={v ? v.value : ''}
+        loading={loading}
+        value={selectedProjectLabel}
         style={{
           width: 120,
         }}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLoaderData, Outlet, Link, redirect, useLocation } from 'react-router-dom';
-import { Layout, Menu, theme, Button, Avatar } from 'antd';
+import { Layout, Menu, theme, Avatar, Modal } from 'antd';
 import {
   FolderViewOutlined,
   AlertOutlined,
@@ -16,8 +16,6 @@ export async function loader() {
     const jwt = localStorage.getItem('jwt');
     const userRes = await getUser(jwt);
     const { user } = userRes.data;
-    // const eventsRes = await getEvents(user.id);
-    // const events = eventsRes.data.events || [];
     return user;
   } catch (err) {
     alert('Please sign in first');
@@ -46,13 +44,25 @@ const items = [
 const { Sider } = Layout;
 
 export default function Root() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const user = useLoaderData();
+
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
 
-  const user = useLoaderData();
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const selectedKey =
     items.find(item => location.pathname.startsWith(item.label.props.to))?.key || '1';
   return (
@@ -74,10 +84,25 @@ export default function Root() {
         <Avatar
           shape="square"
           size={48}
-          className="bg-[#fde3cf] text-[#f56a00] ml-4 my-5 font-medium !text-[30px]"
+          onClick={showModal}
+          className="bg-[#fde3cf] text-[#f56a00] ml-4 my-5 font-medium !text-[30px] cursor-pointer"
         >
           {user.first_name[0]}
         </Avatar>
+        <Modal title="User Profile" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+          <div className="flex flex-row">
+            <span>Name: </span>
+            <span>{`${user.first_name} ${user.second_name}`}</span>
+          </div>
+          <div className="flex flex-row">
+            <span>Email: </span>
+            <span>{user.email}</span>
+          </div>
+          <div className="flex flex-row">
+            <span>User Key: </span>
+            <span>{user.user_key}</span>
+          </div>
+        </Modal>
         <Menu
           className="!text-[16px]"
           theme="dark"

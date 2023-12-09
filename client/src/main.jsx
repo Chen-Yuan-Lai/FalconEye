@@ -8,6 +8,7 @@ import Issues, { loader as issueLoader } from './routes/issues.jsx';
 import Issue from './routes/issue.jsx';
 import Projects from './routes/projects.jsx';
 import Project from './routes/project.jsx';
+import CreateProject, { action as createProjectAction } from './routes/createProject.jsx';
 import CreateAlert, {
   action as createAlertAction,
   loader as createAlertLoader,
@@ -49,6 +50,12 @@ const router = createBrowserRouter([
       {
         path: 'projects/:projectId',
         element: <Project />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: 'projects/new',
+        element: <CreateProject />,
+        action: createProjectAction,
         errorElement: <ErrorPage />,
       },
       {

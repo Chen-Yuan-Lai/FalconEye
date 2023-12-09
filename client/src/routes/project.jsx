@@ -89,14 +89,14 @@ export default function Project() {
   return (
     <Layout className="site-layout flex flex-col min-h-screen">
       <Header className="bg-white h-[15vh]">
-        <h1>{loading ? 'Loading' : project.framework}</h1>
+        <h1>{loading ? 'Loading' : project.name}</h1>
       </Header>
       <Content
         loading={loading}
-        className="pl-10 min-h-[75vh]"
+        className="p-8 min-h-[75vh]"
         style={{ border: '1px solid #d1d5db', overflow: 'initial' }}
       >
-        <Card className="mt-3" title="Errors before past 24h" loading={loading}>
+        <Card title="Errors before past 24h" loading={loading}>
           <DemoColumn eventsNumPerTime={eventsNumPerTime} />
           <div className="mt-3 text-lg">
             Total Errors:{' '}

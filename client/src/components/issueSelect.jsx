@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Select } from 'antd';
+import { Select, Space } from 'antd';
 
 export default function IssueSelect({
   statsPeriod,
@@ -16,7 +16,7 @@ export default function IssueSelect({
     v = selectOption.value;
   }
   return (
-    <div className="flex flex-row gap-2 mt-3">
+    <Space.Compact block className="pt-5">
       <Select
         value={v}
         style={{
@@ -63,7 +63,7 @@ export default function IssueSelect({
           },
         ]}
       />
-    </div>
+    </Space.Compact>
   );
 }
 

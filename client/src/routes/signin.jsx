@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { redirect } from 'react-router-dom';
 import backgroundImage from '../assets/login.webp';
 import SigninForm from '../components/signin.jsx';
