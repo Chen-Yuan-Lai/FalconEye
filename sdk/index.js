@@ -3,7 +3,7 @@ import os from 'os';
 class ErrorExporterSDK {
   constructor() {
     this.validate = false;
-    this.EVENT_ENDPOINT = '/api/1.0/SDK/event';
+    this.EVENT_ENDPOINT = '/api/1.0/capture/SDK/event';
     this.VALIDATION_ENDPOINT = '/api/1.0/wizard/validate';
   }
 

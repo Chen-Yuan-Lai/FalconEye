@@ -29,9 +29,8 @@ export const checkProject = async (userKey, clientToken) => {
           LEFT JOIN 
               projects AS p ON u.id = p.user_id 
           WHERE 
-              user_key = $1
-              AND u.client_token = $2
-              AND p.delete = false`,
+              u.user_key = $1
+              AND p.client_token = $2`,
     values: [userKey, clientToken],
   };
   const res = await pool.query(query);

@@ -22,10 +22,18 @@ const pool = new Pool({
 export default pool;
 
 const er = new ErrorExporterSDK();
+
 await er.init({
-  userKey: 'd10c9510-f171-4c00-9bdc-0e506e67f6d9',
-  clientToken: '9714fcdd-65e3-4c5b-aba9-7bfec85e633c',
+  apiHost: 'http://localhost',
+  userKey: 'f7da9241-4308-4a97-81c1-e25819140532',
+  clientToken: '5dee0e38-54ec-4c87-b7f1-b95eea7cfaba',
 });
+
+// await er.init({
+//   apiHost: 'https://handsomelai.shop',
+//   userKey: 'aceefc85-1a30-4829-ad0d-f3efc38ee0e8',
+//   clientToken: '02a90cb4-afa8-44b5-9682-eae63a8bc1c1',
+// });
 
 app.use(cors());
 

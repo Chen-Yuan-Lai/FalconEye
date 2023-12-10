@@ -21,13 +21,19 @@ export const findSourceMap = async projectId => {
 
 export const getNewestSourceMap = async projectId => {
   const query = {
-    text: `SELECT * FROM source_maps 
-          WHERE project_id = $1 AND
-          version = 
-          (
-            SELECT MAX(version) FROM source_maps
-            WHERE project_id = $1
-          )`,
+    text: `SELECT 
+              * 
+          FROM 
+              source_maps 
+          WHERE 
+              project_id = $1 
+              AND delete = false
+              AND
+                version = 
+                (
+                  SELECT MAX(version) FROM source_maps
+                  WHERE project_id = $1
+                )`,
     values: [projectId],
   };
   const res = await pool.query(query);

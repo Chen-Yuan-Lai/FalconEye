@@ -10,6 +10,8 @@ const parseDSN = async (req, res, next) => {
     }
     res.locals.projectId = +ids.project_id;
     res.locals.userId = +ids.user_id;
+    req.body.kafkaMode = Boolean(Number(process.env.KAFKA_MODE));
+
     next();
   } catch (err) {
     console.error(err);

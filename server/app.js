@@ -17,6 +17,7 @@ import validateRouter from './routes/validation.js';
 import issueRouter from './routes/issue.js';
 import alertRouter from './routes/alert.js';
 import triggerRouter from './routes/trigger.js';
+import captureRouter from './routes/capture.js';
 
 // read json file
 const rawData = fs.readFileSync('swagger_output.json');
@@ -47,11 +48,12 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use(compression());
 
 app.use('/api/1.0', [
+  validateRouter,
+  captureRouter,
   eventRouter,
   sourceMapRouter,
   userRouter,
   projectRouter,
-  validateRouter,
   issueRouter,
   alertRouter,
   triggerRouter,

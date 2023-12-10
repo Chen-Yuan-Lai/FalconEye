@@ -9,8 +9,6 @@ const processEvent = async (req, res, next) => {
 
     const escapeRegExp = string => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters for RegExp
     const stripedStack = stack
-      // .replace(/^.*[\\/]node_modules[\\/].*$/gm, '')
-      // .replace(/^.*node.*$/gm, '')
       .replace(/^ *at.*(\(|file:\/\/| )/gm, '')
       .replace(/^ *at /g, '')
       .replace(/\)/g, '')
@@ -29,11 +27,10 @@ const processEvent = async (req, res, next) => {
         });
       }
     });
-    console.log(stack);
-    console.log(stripedStack);
-    console.log(stackObjs);
+    // console.log(stack);
+    // console.log(stripedStack);
+    // console.log(stackObjs);
     // generate fingerprints
-    // const fingerprints = await argon2.hash(stripedStack.replace(/:[0-9]*:[0-9]*/gm, ''));
     const fingerprints = genHash(stripedStack.replace(/:[0-9]*:[0-9]*/gm, ''));
 
     const eventData = {
