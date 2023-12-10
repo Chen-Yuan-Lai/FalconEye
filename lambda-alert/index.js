@@ -20,16 +20,26 @@ exports.handler = async (event) => {
   });
 
   const producer = kafka.producer();
-  await producer.connect();
-  console.log("Producer connected");
+  try {
+    await producer.connect();
+    console.log("Producer connected");
 
-  await producer.send({
-    topic: "notification",
-    messages: [{ value: ruleId }],
-  });
-
-  await producer.disconnect();
-  console.log("Porducer disconnected");
+    await producer.send({
+      topic: "notification",
+      messages: [{ value: `${ruleId}` }],
+    });
+    console.log("Message sent");
+  } catch (error) {
+    console.error("Error in Kafka producer", error);
+    return { statusCode: 500, body: "Error in sending message" };
+  } finally {
+    try {
+      await producer.disconnect();
+      console.log("Producer disconnected");
+    } catch (disconnectError) {
+      console.error("Error disconnecting producer", disconnectError);
+    }
+  }
 
   return {
     statusCode: 200,
