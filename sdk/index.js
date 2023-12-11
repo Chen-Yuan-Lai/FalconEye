@@ -4,7 +4,7 @@ class ErrorExporterSDK {
   constructor() {
     this.validate = false;
     this.EVENT_ENDPOINT = '/api/1.0/capture/SDK/event';
-    this.VALIDATION_ENDPOINT = '/api/1.0/wizard/validate';
+    this.VALIDATION_ENDPOINT = '/api/1.0/capture/validate';
   }
 
   async init(options = {}) {
