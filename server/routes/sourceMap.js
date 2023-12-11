@@ -22,7 +22,7 @@ router.route('/sourceMap').post([
       branch(
         req => req.body.isSame,
         (req, res) => {
-          res.status(200).json({ data: 'source map file already has the newest version' });
+          res.status(200).json({ message: 'source map file already has the newest version' });
         },
         [uploadToS3, createSourceMap],
       ),

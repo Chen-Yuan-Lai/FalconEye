@@ -14,6 +14,7 @@ const createSourceMap = async (req, res, next) => {
     const result = await sourceMapModel.createSourceMap(fileName, projectId, hashValue, version);
 
     res.status(200).json({
+      message: 'Uploading new version!',
       data: result,
     });
   } catch (err) {
