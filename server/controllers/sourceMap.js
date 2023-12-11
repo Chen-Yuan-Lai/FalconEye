@@ -1,4 +1,3 @@
-import * as argon2 from 'argon2';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import AppError from '../utils/appError.js';
 import * as sourceMapModel from '../models/sourceMap.js';
