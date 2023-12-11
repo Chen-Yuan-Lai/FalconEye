@@ -1,0 +1,35 @@
+# The name of the workflow which you can see when the action runs
+name: Build and upload source map
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Jobs will run in parallel
+jobs:
+  build-and-upload-source-map:
+    # This job runs on Linux
+    runs-on: ubuntu-latest
+
+    # Steps run synchronously (one after the other)
+    steps:
+      - name: Setup Node
+      - uses: actions/setup-node@4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm i esbuild
+      - name: Build Source Map
+        run: npx esbuild {{FILE_PATH}} --bundle --sourcemap --format=esm --platform=node --outfile=./bundle.js
+      - name: Upload Source Map
+        env:
+          USER_KEY: ${{ secrets.USER_KEY }}
+          CLIENT_TOKEN: ${{secrets.CLIENT_TOKEN}}
+        run: |
+          curl -X POST http://handsomelai.shop/api/1.0/sourceMap \
+              -H "Content-Type: multipart/form-data" \
+              -F "map=./bundle.js.map;type=application/octet-stream" \
+              -F "userKey=${USER_KEY}" \
+              -F "clientToken=${CLIENT_TOKEN}"
