@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 
-router.route('/api/1.0/sourceMap').post([
+router.route('/sourceMap').post([
   uploadToMemory.single('map'),
   parseDSN,
   checkSourceMapExisted,
