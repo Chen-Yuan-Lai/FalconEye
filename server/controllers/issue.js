@@ -31,7 +31,6 @@ export const getEventsByIssue = async (req, res, next) => {
   }
 };
 
-
 export const updateIssue = async (req, res, next) => {
   try {
     const { eventIds, status } = req.body;
@@ -40,6 +39,22 @@ export const updateIssue = async (req, res, next) => {
 
     res.status(200).json({
       data: 'ok',
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+export const updateIssues = async (req, res, next) => {
+  try {
+    const { fingerprintsArr, status } = req.body;
+    const { userId } = res.locals;
+
+    const updateRes = await eventModel.updateEventsByFingerprints(fingerprintsArr, userId, status);
+
+    res.status(200).json({
+      data: updateRes,
     });
   } catch (err) {
     console.error(err);

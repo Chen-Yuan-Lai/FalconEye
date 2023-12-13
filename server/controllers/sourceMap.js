@@ -6,10 +6,10 @@ import genHash from '../utils/hash.js';
 
 const createSourceMap = async (req, res, next) => {
   try {
-    const { version, fileName, comingMap } = req.body;
+    const { version, fileName, comingMapContent } = req.body;
 
     const { projectId } = res.locals;
-    const hashValue = genHash(comingMap);
+    const hashValue = genHash(comingMapContent);
 
     const result = await sourceMapModel.createSourceMap(fileName, projectId, hashValue, version);
 

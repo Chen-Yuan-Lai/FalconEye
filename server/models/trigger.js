@@ -3,7 +3,7 @@ import pool from './databasePool.js';
 export const createTriggers = async (client, ruleId, triggers) => {
   const modifyTriggers = triggers.flatMap(el => {
     const trigger = [ruleId, el.triggerTypeId];
-    if (el.triggerTypeId === 10) {
+    if (el.triggerTypeId === 1) {
       trigger.push(null, null);
     } else {
       trigger.push(el.thresholds, el.timeWindow);

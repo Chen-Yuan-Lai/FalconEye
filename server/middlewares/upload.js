@@ -1,4 +1,3 @@
-import * as argon2 from 'argon2';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
@@ -6,9 +5,9 @@ import multer from 'multer';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 
 import s3 from '../utils/S3.js';
-import AppError from '../utils/appError.js';
 import * as sourceMapModel from '../models/sourceMap.js';
 import genHash from '../utils/hash.js';
+import extractSource from '../utils/extractMap.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,7 +38,6 @@ export const uploadToS3 = async (req, res, next) => {
   try {
     const { mimetype, buffer } = req.file;
     const fileName = `${nanoid(12)}.map`;
-    console.log(fileName);
     // upload to s3
     const bucketName = process.env.S3_BUCKET_NAME;
     const params = {
@@ -65,9 +63,10 @@ export const checkSourceMapExisted = async (req, res, next) => {
     const { projectId } = res.locals;
 
     const newestMap = await sourceMapModel.getNewestSourceMap(projectId);
+    const comingMap = JSON.parse(buffer.toString());
 
     req.body.newestMap = newestMap;
-    req.body.comingMap = buffer.toString();
+    req.body.comingMap = comingMap;
     req.body.version = 1;
     next();
   } catch (err) {
@@ -80,8 +79,13 @@ export const checkSourceMapVersion = async (req, res, next) => {
   try {
     const { newestMap, comingMap } = req.body;
 
-    const isSame = newestMap.hash_value === genHash(comingMap);
+    const newestMapHash = newestMap.hash_value;
+    const comingMapContent = await extractSource(comingMap);
+    const comingMapHash = genHash(comingMapContent);
+    const isSame = newestMapHash === comingMapHash;
+
     req.body.newestMap = '';
+    req.body.comingMapContent = comingMapContent;
     if (!isSame) req.body.version += newestMap.version;
     req.body.isSame = isSame;
     next();

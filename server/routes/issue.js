@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { query, body } from 'express-validator';
-import { getIssues, updateIssue, getEventsByIssue } from '../controllers/issue.js';
+import { getIssues, updateIssues, getEventsByIssue } from '../controllers/issue.js';
 import authenticate from '../middlewares/authenticate.js';
 import handleResult from '../middlewares/validator.js';
 
@@ -17,18 +17,18 @@ router
     query('sort').optional({ checkFalsy: true }).isIn(['latest_seen', 'first_seen']),
     handleResult,
     getIssues,
-  ]);
+  ])
+  .patch(
+    authenticate,
+    body('fingerprintsArr').exists().notEmpty().isArray(),
+    body('status').exists().notEmpty(),
+    handleResult,
+    updateIssues,
+  );
 
 // mark 寫swagger doc
 router
   .route('/issue')
-  .get([authenticate, query('id').exists().notEmpty(), handleResult, getEventsByIssue])
-  .patch([
-    authenticate,
-    body('eventIds').exists().notEmpty(),
-    body('status').exists().notEmpty(),
-    handleResult,
-    updateIssue,
-  ]);
+  .get([authenticate, query('id').exists().notEmpty(), handleResult, getEventsByIssue]);
 
 export default router;

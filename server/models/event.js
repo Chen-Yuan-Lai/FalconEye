@@ -111,18 +111,22 @@ export const createRequestInfo = async (
   return res.rows[0];
 };
 
-export const updateEvents = async (eventIds, status) => {
-  const ids = eventIds.map((el, i) => `$${i + 2}`).join(', ');
+export const updateEventsByFingerprints = async (fingerprintsArr, userId, status) => {
+  const placeholders = fingerprintsArr.map((_, i) => `$${i + 3}`).join(', ');
+
   const query = {
     text: `UPDATE 
               events 
           SET 
               status = $1
           WHERE
-              id IN (${ids})
+              user_id = $2
+              AND fingerprints IN (${placeholders})
+          RETURNING *
     `,
-    values: [status, ...eventIds],
+    values: [status, userId, ...fingerprintsArr],
   };
+  console.log(query);
   const res = await pool.query(query);
   return res.rows[0];
 };

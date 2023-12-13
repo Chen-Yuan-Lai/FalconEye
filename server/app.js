@@ -48,8 +48,8 @@ app.use(compression());
 
 app.use('/api/1.0', [
   captureRouter,
-  eventRouter,
   sourceMapRouter,
+  eventRouter,
   userRouter,
   projectRouter,
   issueRouter,
