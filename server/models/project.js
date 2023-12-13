@@ -193,9 +193,9 @@ export const getIssues = async (userId, queryParams) => {
                       COUNT(DISTINCT r.ip) AS users
                     FROM 
                       projects AS p 
-                    INNER JOIN 
+                    LEFT JOIN 
                       events AS e ON e.project_id = p.id
-                    INNER JOIN 
+                    LEFT JOIN 
                       request_info AS r ON r.event_id = e.id 
                     WHERE 
                       $1 = ANY(p.members)
