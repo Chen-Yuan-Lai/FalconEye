@@ -101,8 +101,6 @@ export async function loader() {
       emails: emails[i].map(el => ({ value: el.id, label: el.email })),
     }));
 
-    console.log(projectsMembers);
-
     const triggersTypes = triggersTypesData?.map(el => ({ value: el.id, text: el.description }));
 
     return {

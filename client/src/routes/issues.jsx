@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useLoaderData, useParams, useNavigate, Link, redirect } from 'react-router-dom';
-import { Layout, Table, Tag, Space } from 'antd';
+import { useNavigate, Link, useOutletContext } from 'react-router-dom';
+import { Layout, Table, Tag, Button } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import IssueSelect from '../components/issueSelect.jsx';
 import '../css/page.css';
-import { getIssues, getProjects } from '../utils/fetchData.js';
+import { getIssues, updateIssues } from '../utils/fetchData.js';
+import Swal from 'sweetalert2';
 
 const { Content, Header } = Layout;
 const columns = [
@@ -18,11 +19,7 @@ const columns = [
     title: 'STATUS',
     dataIndex: 'status',
     key: 'status',
-  },
-  {
-    title: 'PROJECT ID',
-    dataIndex: 'projectId',
-    key: 'projectId',
+    render: (_, { status }) => <Tag color={status === 'handled' ? 'green' : 'red'}>{status}</Tag>,
   },
   {
     title: 'FRAMEWORK',
@@ -66,26 +63,6 @@ const columns = [
   },
 ];
 
-export async function loader() {
-  try {
-    const jwt = localStorage.getItem('jwt');
-    const { data } = await getProjects(jwt);
-    const projectNames = data.map(el => {
-      const project = {
-        value: el.id,
-        label: `${el.framework} ${el.id}`,
-      };
-      return project;
-    });
-
-    return projectNames;
-  } catch (err) {
-    console.error(err);
-    alert('Please sign in first');
-    return redirect('/signin');
-  }
-}
-
 // tag 可以優化成useEffect 偵測url query/search parameter的改變 (用 Link改URL)
 export default function Issues() {
   const [issues, setIssues] = useState(null);
@@ -94,7 +71,10 @@ export default function Issues() {
   const [status, setStatus] = useState(null);
   const [projectId, setProjectId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const projects = useOutletContext();
 
   const handleStatsPeriodChange = value => {
     setStatsPeriod(value);
@@ -109,7 +89,55 @@ export default function Issues() {
     setStatus(value);
   };
 
-  const projectNames = useLoaderData();
+  const onSelectChange = (_, newSelectedRows) => {
+    console.log('selectedRows changed: ', newSelectedRows);
+    setSelectedRows(newSelectedRows);
+  };
+
+  const start = async () => {
+    try {
+      setUpdateLoading(true);
+      const jwt = localStorage.getItem('jwt');
+      const fingerprintsArr = selectedRows.map(el => el.fingerprints);
+
+      await updateIssues(jwt, fingerprintsArr, 'handled');
+      setUpdateLoading(false);
+      await Swal.fire({
+        title: 'Success!',
+        text: `Resolve successfully!`,
+        icon: 'success',
+        timer: 1500,
+        position: 'top',
+        showConfirmButton: false,
+        toast: true,
+      });
+    } catch (err) {
+      await Swal.fire({
+        title: 'Error!',
+        text: err.message,
+        icon: 'error',
+        timer: 2000,
+        position: 'top',
+        showConfirmButton: false,
+        toast: true,
+      });
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  const projectNames = projects.map(el => {
+    const project = {
+      value: el.id,
+      label: el.name,
+    };
+    return project;
+  });
+
+  const rowSelection = {
+    onChange: onSelectChange,
+  };
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -123,7 +151,6 @@ export default function Issues() {
       try {
         const { data } = await getIssues(jwt, projectId, status, statsPeriod, sort);
         let issues = [];
-        console.log(data);
         if (data) {
           issues = data.map((el, i) => {
             const { first_seen, latest_seen } = el;
@@ -139,7 +166,6 @@ export default function Issues() {
               time: time,
               events: el.events,
               users: el.users,
-              projectId: el.project_id,
               params: el.event_ids.map(el => `id=${el}`).join('&'),
               fingerprints: el.fingerprints,
             };
@@ -149,7 +175,15 @@ export default function Issues() {
 
         setIssues(issues);
       } catch (err) {
-        setError(err.message);
+        await Swal.fire({
+          title: 'Error!',
+          text: err.message,
+          icon: 'error',
+          timer: 2000,
+          position: 'top',
+          showConfirmButton: false,
+          toast: true,
+        });
       } finally {
         setLoading(false);
       }
@@ -157,11 +191,23 @@ export default function Issues() {
     fetchData();
   }, [projectId, status, statsPeriod, sort]); // Dependency array includes userId
 
-  if (error) return <p>Error: {error}</p>;
+  const hasSelected = selectedRows.length > 0;
+
   return (
     <Layout className="site-layout flex flex-col min-h-screen">
       <Header className="bg-white h-[15vh]">
-        <h1>Issues</h1>
+        <div className="flex flex-row justify-between items-center">
+          <h1>Issues</h1>
+          <Button
+            loading={updateLoading}
+            onClick={start}
+            disabled={!hasSelected}
+            type="primary"
+            className="bg-slate-800 text-white"
+          >
+            Resolve
+          </Button>
+        </div>
       </Header>
       <Content
         className="px-10 min-h-[75vh]"
@@ -175,8 +221,18 @@ export default function Issues() {
           handleProjectIdChange={handleProjectIdChange}
           handleStatusChange={handleStatusChange}
           projectNames={projectNames}
+          loading={loading}
         />
-        <Table loading={loading} className="mt-3" columns={columns} dataSource={issues} />
+        <Table
+          loading={loading}
+          className="mt-3"
+          columns={columns}
+          dataSource={issues}
+          rowSelection={{
+            type: 'checkbox',
+            ...rowSelection,
+          }}
+        />
       </Content>
       <CusFooter />
     </Layout>

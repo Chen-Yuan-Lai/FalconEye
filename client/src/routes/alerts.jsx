@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useLoaderData, useNavigate, Link, redirect } from 'react-router-dom';
+import { useLoaderData, useNavigate, Link, redirect, useOutletContext } from 'react-router-dom';
 import { Layout, Table, Button } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import '../css/page.css';
 import { getAlerts, getProjects } from '../utils/fetchData.js';
 import AlertSelect from '../components/alertSelect.jsx';
+import Swal from 'sweetalert2';
 
 const { Content, Header } = Layout;
 const columns = [
@@ -51,12 +52,20 @@ export async function loader() {
 }
 
 export default function Alerts() {
-  const projectNames = useLoaderData();
   const [alerts, setAlerts] = useState(null);
   const [status, setStatus] = useState(null);
   const [projectId, setProjectId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const projects = useOutletContext();
+
+  const projectNames = projects.map(el => {
+    const project = {
+      value: el.id,
+      label: el.name,
+    };
+    return project;
+  });
 
   const handleProjectIdChange = value => {
     console.log(`selected ${value}`);
@@ -99,7 +108,15 @@ export default function Alerts() {
 
         setAlerts(alerts);
       } catch (err) {
-        setError(err.message);
+        await Swal.fire({
+          title: 'Error!',
+          text: err.message,
+          icon: 'error',
+          timer: 2000,
+          position: 'top',
+          showConfirmButton: false,
+          toast: true,
+        });
       } finally {
         setLoading(false);
       }
@@ -107,7 +124,6 @@ export default function Alerts() {
     fetchData();
   }, [projectId, status]); // Dependency array includes userId
 
-  if (error) return <p>Error: {error}</p>;
   return (
     <Layout className="site-layout flex flex-col min-h-screen">
       <Header className="bg-white h-[15vh]">

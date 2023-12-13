@@ -9,18 +9,16 @@ export default function IssueSelect({
   handleProjectIdChange,
   handleStatusChange,
   projectNames,
+  loading,
 }) {
-  let v = '';
-  if (projectNames && projectNames.length != 0) {
-    const selectOption = projectNames[0];
-    v = selectOption.value;
-  }
   return (
     <Space.Compact block className="pt-5">
       <Select
-        value={v}
+        loading={loading}
+        defaultValue={projectNames[0].value}
         style={{
-          width: 120,
+          width: 180,
+          textAlign: 'center',
         }}
         onChange={handleProjectIdChange}
         options={projectNames}

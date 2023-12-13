@@ -8,20 +8,14 @@ export default function AlertSelect({
   projectNames,
   loading,
 }) {
-  let selectedProjectLabel = '';
-  if (projectNames && projectNames.length > 0) {
-    const selectedProject = projectNames.find(el => el.value === projectId);
-    if (selectedProject) {
-      selectedProjectLabel = selectedProject.label;
-    }
-  }
   return (
     <div className="flex flex-row gap-2 mt-3">
       <Select
         loading={loading}
-        value={selectedProjectLabel}
+        defaultValue={projectNames[0].value}
         style={{
-          width: 120,
+          width: 180,
+          textAlign: 'center',
         }}
         onChange={handleProjectIdChange}
         options={projectNames}

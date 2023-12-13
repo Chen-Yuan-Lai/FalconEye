@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import 'antd/dist/reset.css';
 import './css/index.css';
-import Root, { loader as rootLoader } from './routes/root.jsx';
-import Issues, { loader as issueLoader } from './routes/issues.jsx';
+import Dashboard, { loader as dashboardLoader } from './routes/dashboard.jsx';
+import Issues from './routes/issues.jsx';
 import Issue from './routes/issue.jsx';
 import Projects from './routes/projects.jsx';
 import Project from './routes/project.jsx';
@@ -17,24 +17,25 @@ import Signin, { action as signinAction } from './routes/signin.jsx';
 import ErrorPage from './routes/error-page.jsx';
 import Alerts, { loader as alertsLoader } from './routes/alerts.jsx';
 import Alert from './routes/alert.jsx';
+import Root from './routes/root.jsx';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Root />,
-    loader: rootLoader,
+    element: <Dashboard />,
+    loader: dashboardLoader,
     errorElement: <ErrorPage />,
     children: [
       {
         index: true,
-        loader: issueLoader,
+        // loader: issueLoader,
         element: <Issues />,
         errorElement: <ErrorPage />,
       },
       {
         path: 'issues',
         element: <Issues />,
-        loader: issueLoader,
+        // loader: issueLoader,
         errorElement: <ErrorPage />,
       },
       {
@@ -82,6 +83,11 @@ const router = createBrowserRouter([
     path: '/signin',
     element: <Signin />,
     action: signinAction,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/root',
+    element: <Root />,
     errorElement: <ErrorPage />,
   },
 ]);

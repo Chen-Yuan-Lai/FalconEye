@@ -14,7 +14,25 @@ export const signin = async (email, password) => {
     headers,
     body,
   });
-  if (!res.ok) {
+  if (!res.ok && !`${res.status}`.startsWith('4')) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  return await res.json();
+};
+
+export const signup = async (firstName, secondName, email, password) => {
+  const body = JSON.stringify({
+    firstName,
+    secondName,
+    email,
+    password,
+  });
+  const res = await fetch(`${host}user/signup`, {
+    method: 'POST',
+    headers,
+    body,
+  });
+  if (!res.ok && !`${res.status}`.startsWith('4')) {
     throw new Error(`HTTP error! status: ${res.status}`);
   }
   return await res.json();
@@ -112,6 +130,27 @@ export const getEventsByFingerprints = async (jwt, fingerprints, page = null) =>
   const res = await fetch(url, { headers });
   if (!res.ok && `${res.status}`.startsWith('4')) {
     return null;
+  }
+  return await res.json();
+};
+
+export const updateIssues = async (jwt, fingerprintsArr, status) => {
+  headers.Authorization = `Bearer ${jwt}`;
+
+  const url = `${host}issues`;
+
+  const body = JSON.stringify({
+    status,
+    fingerprintsArr,
+  });
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers,
+    body,
+  });
+
+  if (!res.ok && !`${res.status}`.startsWith('4')) {
+    throw new Error(`HTTP error! status: ${res.status}`);
   }
   return await res.json();
 };
