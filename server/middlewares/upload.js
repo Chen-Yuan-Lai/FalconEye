@@ -64,9 +64,10 @@ export const checkSourceMapExisted = async (req, res, next) => {
 
     const newestMap = await sourceMapModel.getNewestSourceMap(projectId);
     const comingMap = JSON.parse(buffer.toString());
+    const comingMapContent = await extractSource(comingMap);
 
     req.body.newestMap = newestMap;
-    req.body.comingMap = comingMap;
+    req.body.comingMapContent = comingMapContent;
     req.body.version = 1;
     next();
   } catch (err) {
@@ -77,15 +78,14 @@ export const checkSourceMapExisted = async (req, res, next) => {
 
 export const checkSourceMapVersion = async (req, res, next) => {
   try {
-    const { newestMap, comingMap } = req.body;
+    const { newestMap, comingMapContent } = req.body;
 
     const newestMapHash = newestMap.hash_value;
-    const comingMapContent = await extractSource(comingMap);
+
     const comingMapHash = genHash(comingMapContent);
     const isSame = newestMapHash === comingMapHash;
 
     req.body.newestMap = '';
-    req.body.comingMapContent = comingMapContent;
     if (!isSame) req.body.version += newestMap.version;
     req.body.isSame = isSame;
     next();
