@@ -3,7 +3,6 @@ import { RiDeleteBin5Line } from 'react-icons/ri';
 import { Input } from 'antd';
 
 const TriggersDropdowns = ({ handleSelect, handleDelete, dropdowns, options }) => {
-  console.log(options);
   return (
     <>
       {dropdowns.map((dropdown, i) => (

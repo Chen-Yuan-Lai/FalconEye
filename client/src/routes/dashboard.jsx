@@ -110,14 +110,16 @@ export default function Dashboard() {
         <div className="demo-logo-vertical" />
         <div className="flex flex-row items-center gap-4">
           <Avatar
-            shape="square"
             size={48}
+            shape="square"
             onClick={showModal}
             className="bg-[#fde3cf] text-[#f56a00] ml-4 my-5 font-medium !text-[30px] cursor-pointer"
           >
             {user.first_name[0]}
           </Avatar>
-          <span className="text-white text-[1.3rem] font-semibold">{`${user.first_name} ${user.second_name}`}</span>
+          {!collapsed && (
+            <span className="text-white text-[1.3rem] font-semibold">{`${user.first_name} ${user.second_name}`}</span>
+          )}
         </div>
         <Modal
           title="User Profile"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { CiSettings } from 'react-icons/ci';
-import { Layout, Card, Button, Modal, Spin } from 'antd';
+import { Layout, Card, Button, Modal, Spin, Empty } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import '../css/page.css';
 import { getProjects } from '../utils/fetchData.js';
@@ -85,20 +85,28 @@ export default function Projects() {
         <Modal title="Client Token" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
           {currentItem ? <span>{currentItem}</span> : <Spin />}
         </Modal>
-        <div className="grid grid-cols-3 gap-x-3 gap-y-3 mt-4">
-          {projects.map((el, i) => (
-            <Card
-              loading={loading}
-              title={
-                <CardTitle showModal={() => showModal(el.client_token)} name={el.name} id={el.id} />
-              }
-              bordered={false}
-              key={i}
-            >
-              Errors: {el.errors}
-            </Card>
-          ))}
-        </div>
+        {projects.length ? (
+          <div className="grid grid-cols-3 gap-x-3 gap-y-3 mt-4">
+            {projects.map((el, i) => (
+              <Card
+                loading={loading}
+                title={
+                  <CardTitle
+                    showModal={() => showModal(el.client_token)}
+                    name={el.name}
+                    id={el.id}
+                  />
+                }
+                bordered={false}
+                key={i}
+              >
+                Errors: {el.errors}
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Empty className="mt-5" />
+        )}
       </Content>
       <CusFooter />
     </Layout>

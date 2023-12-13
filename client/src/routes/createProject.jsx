@@ -31,7 +31,7 @@ const options = [
     label: <SiJavascript className="text-yellow-300 bg-black text-[5rem]" />,
   },
   {
-    value: 'express text-[5rem]',
+    value: 'express',
     label: <SiExpress className="text-[5rem] text-black bg-white" />,
   },
 ];

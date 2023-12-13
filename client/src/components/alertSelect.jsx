@@ -12,7 +12,7 @@ export default function AlertSelect({
     <div className="flex flex-row gap-2 mt-3">
       <Select
         loading={loading}
-        defaultValue={projectNames[0].value}
+        value={projectNames.length > 0 ? projectNames[0].value : []}
         style={{
           width: 180,
           textAlign: 'center',

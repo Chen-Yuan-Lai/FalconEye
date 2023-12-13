@@ -133,6 +133,7 @@ export default function Issues() {
     };
     return project;
   });
+  // projectNames.push({ value: '', label: 'Select a project' });
 
   const rowSelection = {
     onChange: onSelectChange,

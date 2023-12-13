@@ -130,7 +130,11 @@ export default function Alerts() {
         <div className="flex flex-row justify-between items-center">
           <h1>Alerts</h1>
           <Link to={'/alerts/new'}>
-            <Button type="primary" className="bg-slate-800 text-white">
+            <Button
+              disabled={!projectNames.length > 0}
+              type="primary"
+              className="bg-slate-800 text-white"
+            >
               Create a new alert
             </Button>
           </Link>
