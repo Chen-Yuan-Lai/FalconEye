@@ -13,7 +13,9 @@ const columns = [
     title: 'NAME',
     dataIndex: 'name',
     key: 'name',
-    render: (text, record) => <Link to={`/issues/issue/${record.fingerprints}`}>{text}</Link>,
+    render: (text, record) => (
+      <Link to={`/issues/issue/${encodeURIComponent(record.fingerprints)}`}>{text}</Link>
+    ),
   },
   {
     title: 'STATUS',

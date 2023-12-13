@@ -43,7 +43,7 @@ export async function action({ request }) {
     });
     return redirect('/');
   } catch (err) {
-    Swal.fire({
+    await Swal.fire({
       title: 'Error!',
       text: err.message,
       icon: 'error',

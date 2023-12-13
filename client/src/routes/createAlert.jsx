@@ -14,6 +14,7 @@ import TriggersDropdowns from '../components/triggers.jsx';
 import ChannelDropdowns from '../components/channels.jsx';
 import CusFooter from '../components/footer.jsx';
 import FormStep from '../components/formSteps.jsx';
+import Swal from 'sweetalert2';
 
 const { Content, Header } = Layout;
 
@@ -34,7 +35,15 @@ export async function action({ request }) {
       .match(/channel-[0-9]+/g);
 
     if (!triggerKeys || !channelKeys) {
-      alert("triggers and channels can't be empty");
+      await await Swal.fire({
+        title: 'Error!',
+        text: 'Must select one trigger and channel!',
+        icon: 'error',
+        timer: 1500,
+        position: 'top',
+        showConfirmButton: false,
+        toast: true,
+      });
       return null;
     }
 
@@ -64,16 +73,30 @@ export async function action({ request }) {
       }
     });
 
-    console.log(data);
-
     const res = await createAlert(jwt, data.projectId, data);
 
     if (!res) {
-      alert('Something wrong!');
+      await await Swal.fire({
+        title: 'Error!',
+        text: 'Something wrong!',
+        icon: 'error',
+        timer: 1500,
+        position: 'top',
+        showConfirmButton: false,
+        toast: true,
+      });
       return null;
     }
 
-    alert('create an alert successfully');
+    await Swal.fire({
+      title: 'Success!',
+      text: `Create an alert successfully!`,
+      icon: 'success',
+      timer: 1500,
+      position: 'top',
+      showConfirmButton: false,
+      toast: true,
+    });
     return redirect('/alerts');
   } catch (error) {
     alert(error);

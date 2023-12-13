@@ -5,6 +5,7 @@ import { SiExpress, SiJavascript } from 'react-icons/si';
 import { createProject } from '../utils/fetchData.js';
 import CusFooter from '../components/footer.jsx';
 import FormStep from '../components/formSteps.jsx';
+import Swal from 'sweetalert2';
 import '../css/page.css';
 
 const { Content, Header } = Layout;
@@ -17,10 +18,26 @@ export const action = async ({ request }) => {
     const { platform: framework, name } = projectData;
 
     const res = await createProject(jwt, framework, name);
-    alert('Create Project successfully!');
+    await Swal.fire({
+      title: 'Success!',
+      text: `Create a project successfully!`,
+      icon: 'success',
+      timer: 1500,
+      position: 'top',
+      showConfirmButton: false,
+      toast: true,
+    });
     return redirect('/projects');
-  } catch (error) {
-    alert(error);
+  } catch (err) {
+    await Swal.fire({
+      title: 'Error!',
+      text: err.message,
+      icon: 'error',
+      timer: 1500,
+      position: 'top',
+      showConfirmButton: false,
+      toast: true,
+    });
     return null;
   }
 };

@@ -126,7 +126,9 @@ export const getEvent = async (jwt, eventIds) => {
 
 export const getEventsByFingerprints = async (jwt, fingerprints, page = null) => {
   headers.Authorization = `Bearer ${jwt}`;
-  const url = `${host}event/${fingerprints}?page=${page || 1}`;
+  const encodedFin = encodeURIComponent(fingerprints);
+  console.log(encodedFin);
+  const url = `${host}event/${encodedFin}?page=${page || 1}`;
   const res = await fetch(url, { headers });
   if (!res.ok && `${res.status}`.startsWith('4')) {
     return null;
