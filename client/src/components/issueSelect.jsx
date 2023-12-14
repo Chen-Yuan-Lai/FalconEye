@@ -16,7 +16,7 @@ export default function IssueSelect({
     <Space.Compact block className="pt-5">
       <Select
         loading={loading}
-        value={projectNames.length > 0 ? projectNames[0].value : []}
+        // defaultValue={projectNames.length > 0 ? projectNames[0].value : []}
         style={{
           width: 180,
           textAlign: 'center',

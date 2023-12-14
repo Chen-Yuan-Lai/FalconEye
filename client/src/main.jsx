@@ -15,7 +15,7 @@ import CreateAlert, {
 } from './routes/createAlert.jsx';
 import Signin, { action as signinAction } from './routes/signin.jsx';
 import ErrorPage from './routes/error-page.jsx';
-import Alerts, { loader as alertsLoader } from './routes/alerts.jsx';
+import Alerts from './routes/alerts.jsx';
 import Alert from './routes/alert.jsx';
 import Root from './routes/root.jsx';
 
@@ -69,7 +69,6 @@ const router = createBrowserRouter([
       {
         path: 'alerts',
         element: <Alerts />,
-        loader: alertsLoader,
         errorElement: <ErrorPage />,
       },
       {

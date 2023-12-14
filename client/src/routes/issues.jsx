@@ -152,6 +152,7 @@ export default function Issues() {
         return;
       }
       try {
+        console.log(projectId);
         const { data } = await getIssues(jwt, projectId, status, statsPeriod, sort);
         let issues = [];
         if (data) {

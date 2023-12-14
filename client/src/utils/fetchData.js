@@ -172,9 +172,8 @@ export const createAlert = async (jwt, projectId, data) => {
 
   const url = `${host}/alert?projectId=${projectId}`;
   const res = await fetch(url, { headers, method: 'POST', body: JSON.stringify(data) });
-  if (!res.ok && `${res.status}`.startsWith('4')) {
-    const { errors } = await res.json();
-    throw new Error(errors);
+  if (!res.ok && !`${res.status}`.startsWith('4')) {
+    throw new Error('Something went wrong!');
   }
   return await res.json();
 };
@@ -182,6 +181,7 @@ export const createAlert = async (jwt, projectId, data) => {
 export const getAlerts = async (jwt, projectId) => {
   headers.Authorization = `Bearer ${jwt}`;
   const url = `${host}alerts${projectId ? `?projectId=${projectId}` : ''}`;
+  console.log(url);
   const res = await fetch(url, { headers });
   if (!res.ok && `${res.status}`.startsWith('4')) {
     return null;

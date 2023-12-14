@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useLoaderData, useNavigate, Link, redirect, useOutletContext } from 'react-router-dom';
+import { useNavigate, Link, redirect, useOutletContext } from 'react-router-dom';
 import { Layout, Table, Button } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import '../css/page.css';
-import { getAlerts, getProjects } from '../utils/fetchData.js';
+import { getAlerts } from '../utils/fetchData.js';
 import AlertSelect from '../components/alertSelect.jsx';
 import Swal from 'sweetalert2';
 
@@ -31,25 +31,6 @@ const columns = [
     key: 'project',
   },
 ];
-
-export async function loader() {
-  try {
-    const jwt = localStorage.getItem('jwt');
-    const { data } = await getProjects(jwt);
-    const projectNames = data.map(el => {
-      const project = {
-        value: el.id,
-        label: el.name,
-      };
-      return project;
-    });
-
-    return projectNames;
-  } catch (err) {
-    alert('Please sign in first');
-    return redirect('/signin');
-  }
-}
 
 export default function Alerts() {
   const [alerts, setAlerts] = useState(null);
@@ -90,6 +71,7 @@ export default function Alerts() {
       }
       try {
         const res = await getAlerts(jwt, projectId);
+        console.log(res, projectId);
         let alerts = null;
         if (res) {
           console.log(res.data);

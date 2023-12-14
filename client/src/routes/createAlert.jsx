@@ -72,19 +72,21 @@ export async function action({ request }) {
         data[el] = alertData[el];
       }
     });
+    console.log(data);
 
     const res = await createAlert(jwt, data.projectId, data);
 
-    if (!res) {
-      await await Swal.fire({
+    if (res.status === 'fail' || res.status === 'error') {
+      await Swal.fire({
         title: 'Error!',
-        text: 'Something wrong!',
+        text: res.data,
         icon: 'error',
         timer: 1500,
         position: 'top',
         showConfirmButton: false,
         toast: true,
       });
+
       return null;
     }
 
@@ -98,8 +100,17 @@ export async function action({ request }) {
       toast: true,
     });
     return redirect('/alerts');
-  } catch (error) {
-    alert(error);
+    // return null;
+  } catch (err) {
+    await Swal.fire({
+      title: 'Error!',
+      text: err.message,
+      icon: 'error',
+      timer: 1500,
+      position: 'top',
+      showConfirmButton: false,
+      toast: true,
+    });
     return null;
   }
 }
