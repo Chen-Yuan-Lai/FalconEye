@@ -16,7 +16,7 @@ const authenticate = async (req, res, next) => {
       res.status(401).json({ errors: err });
       return;
     }
-    res.status(401).json({ errors: 'authenticate failed' });
+    res.status(401).json({ data: 'authenticate failed' });
   }
 };
 export default authenticate;

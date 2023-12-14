@@ -27,6 +27,7 @@ export const createAlert = async (req, res, next) => {
     await client.query('BEGIN');
     const { projectId } = req.query;
     const { triggers, channels, filter, actionInterval, name, active } = req.body;
+    console.log(triggers, channels, filter, actionInterval, name, active);
     const alertRes = await AlertModel.createAlert(
       client,
       projectId,

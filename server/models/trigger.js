@@ -6,7 +6,7 @@ export const createTriggers = async (client, ruleId, triggers) => {
     if (el.triggerTypeId === 1) {
       trigger.push(null, null);
     } else {
-      trigger.push(el.thresholds, el.timeWindow);
+      trigger.push(el.threshold, el.timeWindow);
     }
     return trigger;
   });
