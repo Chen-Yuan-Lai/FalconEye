@@ -9,14 +9,12 @@ export default function IssueSelect({
   handleProjectIdChange,
   handleStatusChange,
   projectNames,
-  loading,
 }) {
   console.log(projectNames.length);
   return (
     <Space.Compact block className="pt-5">
       <Select
-        loading={loading}
-        // defaultValue={projectNames.length > 0 ? projectNames[0].value : []}
+        value={projectId}
         style={{
           width: 180,
           textAlign: 'center',

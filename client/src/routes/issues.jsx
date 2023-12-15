@@ -33,26 +33,6 @@ const columns = [
     dataIndex: 'time',
     key: 'time',
   },
-  // {
-  //   title: 'TAGS',
-  //   key: 'tags',
-  //   dataIndex: 'tags',
-  //   render: (_, { tags }) => (
-  //     <>
-  //       {tags.map(tag => {
-  //         let color = tag.length > 5 ? 'geekblue' : 'green';
-  //         if (tag === 'loser') {
-  //           color = 'volcano';
-  //         }
-  //         return (
-  //           <Tag color={color} key={tag}>
-  //             {tag.toUpperCase()}
-  //           </Tag>
-  //         );
-  //       })}
-  //     </>
-  //   ),
-  // },
   {
     title: 'EVENTS',
     dataIndex: 'events',
@@ -67,16 +47,29 @@ const columns = [
 
 // tag 可以優化成useEffect 偵測url query/search parameter的改變 (用 Link改URL)
 export default function Issues() {
+  const projects = useOutletContext() || [];
+
+  let projectNames = [];
+  if (projects.length > 0) {
+    projectNames = projects.map(el => {
+      const project = {
+        value: el.id,
+        label: el.name,
+      };
+      return project;
+    });
+  }
+
   const [issues, setIssues] = useState(null);
   const [statsPeriod, setStatsPeriod] = useState(null);
   const [sort, setSort] = useState(null);
   const [status, setStatus] = useState(null);
-  const [projectId, setProjectId] = useState(null);
+  const [projectId, setProjectId] = useState(
+    projectNames.length > 0 ? projectNames[0].value : null
+  );
   const [loading, setLoading] = useState(true);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
-
-  const projects = useOutletContext();
 
   const handleStatsPeriodChange = value => {
     setStatsPeriod(value);
@@ -85,6 +78,7 @@ export default function Issues() {
     setSort(value);
   };
   const handleProjectIdChange = value => {
+    console.log(value);
     setProjectId(value);
   };
   const handleStatusChange = value => {
@@ -128,15 +122,6 @@ export default function Issues() {
     }
   };
 
-  const projectNames = projects.map(el => {
-    const project = {
-      value: el.id,
-      label: el.name,
-    };
-    return project;
-  });
-  // projectNames.push({ value: '', label: 'Select a project' });
-
   const rowSelection = {
     onChange: onSelectChange,
   };
@@ -152,7 +137,6 @@ export default function Issues() {
         return;
       }
       try {
-        console.log(projectId);
         const { data } = await getIssues(jwt, projectId, status, statsPeriod, sort);
         let issues = [];
         if (data) {
@@ -161,7 +145,7 @@ export default function Issues() {
             const firstSeen = Object.entries(first_seen);
             const lastSeen = Object.entries(latest_seen);
             const time = `${firstSeen[0][1]} ${firstSeen[0][0]} ago | ${lastSeen[0][1]} ${lastSeen[0][0]} ago`;
-            // tag 可能要改資料格式，避免issue 的url過長
+            console.log(el.events);
             const issue = {
               key: i + 1,
               name: el.name,

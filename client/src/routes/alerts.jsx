@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Link, redirect, useOutletContext } from 'react-router-dom';
+import { useNavigate, Link, useOutletContext } from 'react-router-dom';
 import { Layout, Table, Button } from 'antd';
 import CusFooter from '../components/footer.jsx';
 import '../css/page.css';
@@ -33,20 +33,25 @@ const columns = [
 ];
 
 export default function Alerts() {
-  const [alerts, setAlerts] = useState(null);
-  const [status, setStatus] = useState(null);
-  const [projectId, setProjectId] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   const projects = useOutletContext();
 
-  const projectNames = projects.map(el => {
-    const project = {
-      value: el.id,
-      label: el.name,
-    };
-    return project;
-  });
+  let projectNames = [];
+  if (projects.length > 0) {
+    projectNames = projects.map(el => {
+      const project = {
+        value: el.id,
+        label: el.name,
+      };
+      return project;
+    });
+  }
+
+  const [alerts, setAlerts] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [projectId, setProjectId] = useState(
+    projectNames.length > 0 ? projectNames[0].value : null
+  );
+  const [loading, setLoading] = useState(true);
 
   const handleProjectIdChange = value => {
     console.log(`selected ${value}`);
