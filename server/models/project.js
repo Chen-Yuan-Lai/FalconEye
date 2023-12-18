@@ -163,9 +163,7 @@ export const getIssues = async (userId, queryParams) => {
   }
 
   if (queryParams.statsPeriod) {
-    statsPeriod = `AND e.created_at >= NOW() - $${i}::INTERVAL`;
-    queryValue.push(queryParams.statsPeriod);
-    i += 1;
+    statsPeriod = format(`AND e.created_at >= NOW() - %L::INTERVAL`, queryParams.statsPeriod);
   }
 
   if (queryParams.status) {
