@@ -2,10 +2,10 @@ name: Deploy main server to EC2 on PR and merger
 "on":
   push:
     branches:
-      - main
+      - develop
   pull_request:
     branches:
-      - main
+      - develop
 jobs:
   pull newest version and return server:
     runs-on: ubuntu-latest
