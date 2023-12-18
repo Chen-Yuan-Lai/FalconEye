@@ -1,8 +1,5 @@
 name: Deploy main server to EC2 on PR and merger
 "on":
-  push:
-    branches:
-      - develop
   pull_request:
     branches:
       - develop
@@ -27,7 +24,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
+          username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
