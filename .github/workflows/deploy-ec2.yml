@@ -7,7 +7,7 @@ name: Deploy main server to EC2 on PR and merger
     branches:
       - develop
 jobs:
-  pull newest version and return server:
+  pull_newest_version:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
