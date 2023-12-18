@@ -9,14 +9,15 @@
     }
   },
   "rules": {
+    "import/no-extraneous-dependencies": [
+      "off",
+      { "devDependencies": false, "optionalDependencies": false, "peerDependencies": false }
+    ],
     "import/no-cycle": ["error", { "maxDepth": 1 }],
     "node/no-unsupported-features/es-syntax": "off",
     "import/extensions": ["warn", { "js": "ignorePackages" }],
     "camelcase": ["warn", { "ignoreDestructuring": true }],
     "consistent-return": "off",
-    "prefer-destructuring": [
-      "error",
-      { "AssignmentExpression": { "array": false } }
-    ]
+    "prefer-destructuring": ["error", { "AssignmentExpression": { "array": false } }]
   }
 }
