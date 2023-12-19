@@ -9,15 +9,34 @@ import '../css/page.css';
 const { Content, Header } = Layout;
 
 const AlertArea = ({ alertTriggeredPerHour }) => {
+  const data = alertTriggeredPerHour.map(el => {
+    const point = {
+      hourly_interval: el.hourly_interval.split('-')[0].split(':')[0],
+      triggered_times: +el.event_count,
+    };
+    return point;
+  });
   const config = {
-    data: alertTriggeredPerHour,
+    data,
     xField: 'hourly_interval',
     yField: 'triggered_times',
-    xAxis: {
-      tickLine: null,
-      // Optional: Adjust the number of ticks based on your data
-      tickCount: 5,
-      range: [0, 1],
+    axis: {
+      x: {
+        line: true,
+        tickFilter: (tick, i) => {
+          return i % 11 === 0;
+        },
+        tickDirection: 'negative',
+      },
+    },
+    style: {
+      fill: 'linear-gradient(-90deg, white 0%, darkblue 100%)',
+    },
+    line: {
+      style: {
+        stroke: 'darkblue',
+        strokeWidth: 2,
+      },
     },
   };
 

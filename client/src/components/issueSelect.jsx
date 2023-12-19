@@ -10,7 +10,6 @@ export default function IssueSelect({
   handleStatusChange,
   projectNames,
 }) {
-  console.log(projectNames.length);
   return (
     <Space.Compact block className="pt-5">
       <Select

@@ -1,0 +1,32 @@
+name: React build to S3
+"on":
+  pull_request:
+    branches:
+      - develop
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+     - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies and build app
+        run: |
+          cd client
+          npm install
+          npm run build
+
+      - name: Upload to S3
+        uses: jakejarvis/s3-sync-action@master
+        env:
+          SOURCE_DIR: "./server/dist"
+          DEST_DIR: "dist/"
+          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_BUCKET_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_BUCKET_SECRET_ACCESS_KEY }}

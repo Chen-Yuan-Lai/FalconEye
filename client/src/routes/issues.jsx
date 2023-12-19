@@ -209,7 +209,6 @@ export default function Issues() {
           handleProjectIdChange={handleProjectIdChange}
           handleStatusChange={handleStatusChange}
           projectNames={projectNames}
-          loading={loading}
         />
         <Table
           loading={loading}
