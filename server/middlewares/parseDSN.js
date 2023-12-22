@@ -8,8 +8,8 @@ const parseDSN = async (req, res, next) => {
     if (!ids) {
       return next(new AppError('invalid userKey or clientToken', 400));
     }
-    res.locals.projectId = +ids.project_id;
-    res.locals.userId = +ids.user_id;
+    res.locals.projectId = Number(ids.project_id);
+    res.locals.userId = Number(ids.user_id);
     req.body.kafkaMode = Boolean(Number(process.env.KAFKA_MODE));
 
     next();

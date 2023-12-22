@@ -1,5 +1,3 @@
-import pool from './databasePool.js';
-
 export const createChannels = async (client, ruleId, channels) => {
   const modifyChannels = channels.flatMap(el => [ruleId, el.userId, el.type, el.token]);
 

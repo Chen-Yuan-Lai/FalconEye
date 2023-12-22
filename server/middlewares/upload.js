@@ -48,7 +48,7 @@ export const uploadToS3 = async (req, res, next) => {
     };
 
     const command = new PutObjectCommand(params);
-    const result = await s3.send(command);
+    await s3.send(command);
     req.body.fileName = fileName;
     next();
   } catch (err) {
@@ -66,9 +66,12 @@ export const checkSourceMapExisted = async (req, res, next) => {
     const comingMap = JSON.parse(buffer.toString());
     const comingMapContent = await extractSource(comingMap);
 
-    req.body.newestMap = newestMap;
-    req.body.comingMapContent = comingMapContent;
-    req.body.version = 1;
+    req.body = {
+      ...req.body,
+      newestMap,
+      comingMapContent,
+      version: 1,
+    };
     next();
   } catch (err) {
     console.error(err);

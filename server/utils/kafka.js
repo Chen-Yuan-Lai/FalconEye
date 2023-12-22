@@ -19,8 +19,6 @@ export const disconnectProducer = async () => {
   console.log('Porducer disconnected');
 };
 
-// const topics = ['notification'];
-
 export const sendMessage = async (topic, message) => {
   const res = await producer.send({
     topic,

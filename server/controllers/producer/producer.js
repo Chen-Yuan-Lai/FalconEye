@@ -15,7 +15,6 @@ export const eventProducer = async (req, res, next) => {
     eventData.projectId = projectId;
 
     await sendMessage('eventData', JSON.stringify(eventData));
-    console.log(eventData);
 
     res.status(200).json({
       data: {

@@ -8,18 +8,19 @@ import '../css/page.css';
 
 const { Content, Header } = Layout;
 
-const AlertArea = ({ alertTriggeredPerHour }) => {
+const AlertArea = ({ alertTriggeredPerHour, loading }) => {
+  console.log(alertTriggeredPerHour);
   const data = alertTriggeredPerHour.map(el => {
     const point = {
-      hourly_interval: el.hourly_interval.split('-')[0].split(':')[0],
-      triggered_times: +el.event_count,
+      time: el.hourly_interval.split('-')[0].split(':')[0],
+      count: +el.triggered_times,
     };
     return point;
   });
   const config = {
     data,
-    xField: 'hourly_interval',
-    yField: 'triggered_times',
+    xField: 'time',
+    yField: 'count',
     axis: {
       x: {
         line: true,
@@ -40,7 +41,7 @@ const AlertArea = ({ alertTriggeredPerHour }) => {
     },
   };
 
-  return <Area {...config} />;
+  return <Area loading={loading} {...config} />;
 };
 
 export default function Alert() {
@@ -83,7 +84,6 @@ export default function Alert() {
         const { data } = await getAlert(jwt, id, statPeriod);
         setAlert(data.alert);
         setSwitchLoading(false);
-        console.log(data);
         setAlertsTriggeredPerHour(data.alertTriggeredPerHour);
       } catch (err) {
         console.error('Error fetching project details:', err);
@@ -146,7 +146,7 @@ export default function Alert() {
           ]}
         />
         <Card className="mt-3" title="Alert triggered" loading={loading}>
-          <AlertArea alertTriggeredPerHour={alertsTriggeredPerHour} />
+          <AlertArea loading={loading} alertTriggeredPerHour={alertsTriggeredPerHour} />
         </Card>
       </Content>
       <CusFooter />
