@@ -34,7 +34,7 @@ services:
     networks:
       - webnet
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
+      test: ["CMD", "curl", "-f", "http://gateway-server"]
       interval: 30s
       timeout: 10s
       retries: 3
