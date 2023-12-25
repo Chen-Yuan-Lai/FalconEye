@@ -34,7 +34,7 @@ services:
     networks:
       - webnet
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -42,7 +42,7 @@ services:
   nginx-prometheus-exporter:
     image: nginx/nginx-prometheus-exporter:1.0.0
     container_name: nginx-prometheus-exporter
-    command: -nginx.scrape-uri http://nginx:8080/stub_status
+    command: -nginx.scrape-uri http://nginx:80/stub_status
     ports:
       - 9113:9113
     depends_on:
