@@ -1,8 +1,7 @@
-import { GetObjectCommand } from '@aws-sdk/client-s3';
 import locateMap from '../utils/locateMap.js';
 import * as sourceMapModel from '../models/sourceMap.js';
 import * as eventModel from '../models/event.js';
-import s3 from '../utils/S3.js';
+import { getObject } from '../aws/S3.js';
 
 export const createEvent = async (req, res, next) => {
   try {
@@ -60,13 +59,7 @@ export const createEvent = async (req, res, next) => {
       const keyString = newestMap.file_name;
 
       // pull source map file from S3
-      const bucketName = process.env.S3_BUCKET_NAME;
-      const params = {
-        Bucket: bucketName,
-        Key: keyString,
-      };
-      const command = new GetObjectCommand(params);
-      const response = await s3.send(command);
+      const response = await getObject(keyString);
       const map = await response.Body.transformToString();
 
       const codeBlocksPromises = stackObjs.map(el => locateMap(map, el.fileName, el.line, stack));

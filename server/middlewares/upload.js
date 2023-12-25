@@ -2,9 +2,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
 import multer from 'multer';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-
-import s3 from '../utils/S3.js';
+// import { PutObjectCommand } from '@aws-sdk/client-s3';
+// import s3 from '../utils/S3.js';
+import { putObject } from '../aws/S3.js';
 import * as sourceMapModel from '../models/sourceMap.js';
 import genHash from '../utils/hash.js';
 import extractSource from '../utils/extractMap.js';
@@ -39,16 +39,7 @@ export const uploadToS3 = async (req, res, next) => {
     const { mimetype, buffer } = req.file;
     const fileName = `${nanoid(12)}.map`;
     // upload to s3
-    const bucketName = process.env.S3_BUCKET_NAME;
-    const params = {
-      Bucket: bucketName,
-      Key: fileName,
-      Body: buffer,
-      ContentType: mimetype,
-    };
-
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
+    await putObject(fileName, buffer, mimetype);
     req.body.fileName = fileName;
     next();
   } catch (err) {
