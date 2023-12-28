@@ -1,8 +1,7 @@
-import { GetObjectCommand } from '@aws-sdk/client-s3';
 import locateMap from '../utils/locateMap.js';
 import * as sourceMapModel from '../models/sourceMap.js';
 import * as eventModel from '../models/event.js';
-import s3 from '../utils/S3.js';
+import { getObject } from '../aws/S3.js';
 
 export const createEvent = async (req, res, next) => {
   try {
@@ -56,27 +55,17 @@ export const createEvent = async (req, res, next) => {
 
     let codeBlockResult = {};
 
-    // mark if source map existed, produce code block
     if (newestMap) {
       const keyString = newestMap.file_name;
 
       // pull source map file from S3
-      const bucketName = process.env.S3_BUCKET_NAME;
-      console.log(bucketName);
-      const params = {
-        Bucket: bucketName,
-        Key: keyString,
-      };
-      const command = new GetObjectCommand(params);
-      const response = await s3.send(command);
+      const response = await getObject(keyString);
       const map = await response.Body.transformToString();
 
       const codeBlocksPromises = stackObjs.map(el => locateMap(map, el.fileName, el.line, stack));
       const codeBlocks = await Promise.all(codeBlocksPromises);
 
-      console.log(stackObjs[0].fileName);
-
-      const createCodeBlockPromises = new Array(stackObjs.length).fill(null).map((el, i) => {
+      const createCodeBlockPromises = new Array(stackObjs.length).fill(null).map((_, i) => {
         let block;
         let errorLine;
         if (!codeBlocks[i]) {
@@ -105,7 +94,6 @@ export const createEvent = async (req, res, next) => {
       });
 
       codeBlockResult = await Promise.all(createCodeBlockPromises);
-      // console.log(codeBlockResult);
     }
 
     let requestInfoResult = {};
@@ -118,7 +106,7 @@ export const createEvent = async (req, res, next) => {
         host,
         userAgent,
         accept,
-        JSON.stringify(queryParas), // tag 修改成存null
+        JSON.stringify(queryParas),
         ip,
       );
     }
@@ -127,7 +115,6 @@ export const createEvent = async (req, res, next) => {
       codeBlockResult,
       requestInfoResult,
     };
-    // console.log(data);
     res.status(200).json({
       status: 'insert successfully',
       data,

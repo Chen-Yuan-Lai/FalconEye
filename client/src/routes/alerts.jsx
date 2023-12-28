@@ -76,11 +76,26 @@ export default function Alerts() {
       }
       try {
         const res = await getAlerts(jwt, projectId);
-        console.log(res, projectId);
         let alerts = null;
         if (res) {
           console.log(res.data);
           alerts = res.data.map((el, i) => {
+            // let firstSeen;
+            // if (el.latest_triggered_time.hours && el.latest_triggered_time.hours >= 24) {
+            //   firstSeen = `${Math.ceil(el.latest_triggered_time.hours / 24)} days ago`;
+            // } else if (el.latest_triggered_time.hours && el.latest_triggered_time.hours < 24) {
+            //   firstSeen = `${el.latest_triggered_time.hours} hours ago`;
+            // } else if (el.latest_triggered_time.minutes && el.latest_triggered_time.minutes >= 60) {
+            //   firstSeen = `${Math.ceil(el.latest_triggered_time.minutes / 60)} hours ago`;
+            // } else if (el.latest_triggered_time.minutes && el.latest_triggered_time.minutes < 60) {
+            //   firstSeen = `${el.latest_triggered_time.minutes} minutes ago`;
+            // } else if (el.latest_triggered_time.seconds && el.latest_triggered_time.seconds >= 60) {
+            //   firstSeen = `${Math.ceil(el.latest_triggered_time.seconds)} minutes ago`;
+            // } else if (el.latest_triggered_time.seconds && el.latest_triggered_time.seconds < 60) {
+            //   firstSeen = `${Math.ceil(el.latest_triggered_time.seconds)} seconds ago`;
+            // } else {
+            //   firstSeen = null;
+            // }
             const alert = {
               key: i + 1,
               name: el.name,

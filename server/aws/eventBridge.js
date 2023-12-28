@@ -19,8 +19,6 @@ const cronTable = {
   '1w': 'cron(0 0 ? * 1 *)',
 };
 
-console.log(process.env.AWS_REGION);
-
 const client = new EventBridgeClient({
   region: process.env.AWS_REGION,
   credentials: {
@@ -30,7 +28,6 @@ const client = new EventBridgeClient({
 });
 
 export const createRule = async (ruleId, interval) => {
-  console.log(cronTable[interval]);
   const params = {
     Name: `Alert-Rule-${ruleId}`,
     ScheduleExpression: cronTable[interval],

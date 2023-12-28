@@ -72,7 +72,7 @@ export const getProjects = async jwt => {
   return await res.json();
 };
 
-export const getProject = async (jwt, projectId, bin = '', interval = '') => {
+export const getProject = async (jwt, projectId, bin, interval) => {
   headers.Authorization = `Bearer ${jwt}`;
   let url = `${host}project?projectId=${projectId}`;
   if (bin && interval) {

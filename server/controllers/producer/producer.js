@@ -1,4 +1,3 @@
-import AppError from '../../utils/appError.js';
 import { connectProducer, sendMessage } from '../../utils/kafka.js';
 
 connectProducer();
@@ -15,7 +14,6 @@ export const eventProducer = async (req, res, next) => {
     eventData.projectId = projectId;
 
     await sendMessage('eventData', JSON.stringify(eventData));
-    console.log(eventData);
 
     res.status(200).json({
       data: {
@@ -30,4 +28,7 @@ export const eventProducer = async (req, res, next) => {
   }
 };
 
-export const sourceMapProducer = async (req, res, next) => {};
+export const notificationProducer = async (req, res, next) => {
+  await sendMessage('notification', JSON.stringify(6));
+  res.status(200).json({ message: 'ok' });
+};

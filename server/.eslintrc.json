@@ -9,6 +9,7 @@
     }
   },
   "rules": {
+    "max-classes-per-file": ["error", 2],
     "import/no-extraneous-dependencies": [
       "off",
       { "devDependencies": false, "optionalDependencies": false, "peerDependencies": false }

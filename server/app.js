@@ -57,7 +57,7 @@ app.use('/api/1.0', [
   triggerRouter,
 ]);
 
-app.get('*', (req, res) => {
+app.get('*', (_, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html')); // Serve the index.html for all other requests
 });
 

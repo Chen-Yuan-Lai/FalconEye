@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  gateway-server:
+    container_name: gateway-server
+    build: ./server
+    ports:
+      - "3000:3000"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - webnet
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - "--path.rootfs=/host"
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - "/:/host:ro,rslave"
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - webnet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx-prometheus-exporter:
+    image: nginx/nginx-prometheus-exporter:1.0.0
+    container_name: nginx-prometheus-exporter
+    command: -nginx.scrape-uri http://nginx:80/stub_status
+    ports:
+      - 9113:9113
+    depends_on:
+      - nginx
+    networks:
+      - webnet
+networks:
+  webnet:

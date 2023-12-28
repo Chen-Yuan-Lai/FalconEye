@@ -50,7 +50,7 @@ function getItem(key, icon, label) {
 const items = [
   getItem('1', <ContainerOutlined />, <Link to="/issues">Issues</Link>),
   getItem('2', <FolderViewOutlined />, <Link to="/projects">Projects</Link>),
-  getItem('3', <AreaChartOutlined />, <Link to="/stats">Stat</Link>),
+  // getItem('3', <AreaChartOutlined />, <Link to="/stats">Stat</Link>),
   getItem('4', <AlertOutlined />, <Link to="/alerts">Alerts</Link>),
 ];
 const { Sider } = Layout;
