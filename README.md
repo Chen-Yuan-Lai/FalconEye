@@ -1,4 +1,6 @@
-<img src='https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/9a4785e2-e4fa-4839-86e4-e2ed474a3dad' width='250' style="display: block; margin-left: auto; margin-right: auto;">
+<p align="center">
+  <img src='https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/9a4785e2-e4fa-4839-86e4-e2ed474a3dad' width='250'>
+</p>
 <h3 align="center">Say Goodbye to the Sly Bug</h3>
 <br />
 <br />
