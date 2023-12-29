@@ -11,6 +11,7 @@ export default function SigninForm({ change }) {
         <input type="hidden" name="formType" value="signin" />
         <h1 className="text-center">Welcome Back!</h1>
         <Input
+          defaultValue={'a186235@gmail.com'}
           type="email"
           name="email"
           addonBefore={
@@ -20,6 +21,7 @@ export default function SigninForm({ change }) {
           }
         />
         <Input.Password
+          defaultValue={'1234'}
           name="password"
           addonBefore={
             <div className="addon-wrapper">

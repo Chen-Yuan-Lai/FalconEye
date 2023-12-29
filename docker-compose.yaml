@@ -5,6 +5,8 @@ services:
     build: ./server
     ports:
       - "3000:3000"
+    volumes:
+      - "./server/dist:/usr/src/app/dist"
     logging:
       driver: json-file
       options:
@@ -51,3 +53,4 @@ services:
       - webnet
 networks:
   webnet:
+volumes:
