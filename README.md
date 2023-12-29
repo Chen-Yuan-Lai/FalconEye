@@ -11,13 +11,39 @@ FalconEye is a developer-first error tracking platform that help developers to c
 
 # Outline
 
-- Waht's FalconEye
-- Features
-- Getting Started
-  - Installation
-- Architechture
-- Table Schema
+- [Waht's FalconEye]()
+- [Features]()
+- [Getting Started]()
+- [Installation]()
+- [Architechture]()
+- [Table Schema]()
 
 # Features
 
+### **Capture error data with custom-developed SDK**
+
+### **Automate source map file uploads via custom-developed CLI tool**
+
+### **Personalized analytics dashboard**
+
+### **Source code location mapping**
+
+### **Customized alert system**
+
+# Getting Started
+
+1. Sign up an account in FalconEye, or or you can use the test account below:
+
+   | Testing Account |                   |
+   | :-------------- | :---------------- |
+   | Email           | a186235@gmail.com |
+   | Password        | 1234              |
+
+2. Create a project on projects page, and:
+   - Get user key from account information
+   -
+   - Get client token from specific project card
+
 # Architechture
+
+# Table Schema

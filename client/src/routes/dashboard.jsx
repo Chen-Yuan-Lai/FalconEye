@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLoaderData, Outlet, Link, redirect, useLocation, useNavigate } from 'react-router-dom';
-import { Layout, Menu, Avatar, Modal } from 'antd';
+import { Layout, Menu, Avatar, Modal, Button } from 'antd';
 import Swal from 'sweetalert2';
 import {
   FolderViewOutlined,
@@ -125,8 +125,12 @@ export default function Dashboard() {
           title="User Profile"
           open={isModalOpen}
           onOk={handleOk}
-          onCancel={handleCancel}
-          cancelText="Logout"
+          onCancel={handleOk}
+          footer={
+            <Button key="back" onClick={handleCancel}>
+              Logout
+            </Button>
+          }
         >
           <div className="flex flex-row">
             <span>Name: </span>
