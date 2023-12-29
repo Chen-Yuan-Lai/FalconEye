@@ -1,3 +1,21 @@
-[](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/18cb7f57-2654-498a-9510-cff70b7b5112)
+<img src='https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/9a4785e2-e4fa-4839-86e4-e2ed474a3dad' width='250' style="display: block; margin-left: auto; margin-right: auto;">
+<h3 align="center">Say Goodbye to the Sly Bug</h3>
+<br />
+<br />
 
-# FalconEye
+# What's FalcoEye
+
+FalconEye is a developer-first error tracking platform that help developers to continuously manage and analyze errors logs about applications.
+
+# Outline
+
+- Waht's FalconEye
+- Features
+- Getting Started
+  - Installation
+- Architechture
+- Table Schema
+
+# Features
+
+# Architechture
