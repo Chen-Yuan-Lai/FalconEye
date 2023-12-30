@@ -11,17 +11,24 @@ FalconEye is a developer-first error tracking platform that help developers to c
 - [Waht's FalconEye]()
 - [Features]()
 - [Getting Started]()
-- [Installation]()
 - [Architechture]()
 - [Table Schema]()
 
 # Features
 
-### **Capture error data with custom-developed SDK**
+### **Capture error logs with custom-developed SDK**
+
+- Encapsulate user validation and error data upload APIs into user-friendly SDK functions.
+- users have the flexibility to capture specific error logs for the function selectively, or capture them in the entire Express application using middleware.
 
 ### **Automate source map file uploads via custom-developed CLI tool**
 
+- A simple interactive command-line user interface is provided, where setting up the configuration requires answering only a few questions.
+- Source map files, are automatically built from the source code and uploaded by GitHub Actions.
+
 ### **Personalized analytics dashboard**
+
+-Time-series-based plots for errors and alerts help users manage projects more effectively.
 
 ### **Source code location mapping**
 
@@ -49,7 +56,7 @@ FalconEye is a developer-first error tracking platform that help developers to c
       </tr>
       </table>
 
-3. Set up FalconEye SDK in your application runtime (details see [@falcon-tech/node](https://www.npmjs.com/package/@falconeye-tech/sdk))
+3. Set up [FalconEye SDK](https://www.npmjs.com/package/@falconeye-tech/sdk) in your application runtime
 
    - **Install**
      ```
@@ -95,8 +102,12 @@ FalconEye is a developer-first error tracking platform that help developers to c
       });
      ```
 
-4. Upload source map file(details see[@falconeye-tech/wizard](https://www.npmjs.com/package/@falconeye-tech/wizard))
+4. Built and upload source map file by [FalconEye wizard](https://www.npmjs.com/package/@falconeye-tech/wizard)(optional)
+
+   If you want to know actual location in the source codes about the errors, you need to do steps below:
+
    - Run wizard
+
    ```
    npx @falconeye-tech/wizard wizard
    ```
