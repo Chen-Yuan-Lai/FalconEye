@@ -75,42 +75,41 @@ FalconEye is a developer-first error tracking platform that help developers to c
      ```
    - **Configure**
 
-     ```
-     import fe from '@falconeye-tech/sdk';
+     ```javascript
+     import fe from "@falconeye-tech/sdk";
 
-      const er = new fe();
+     const er = new fe();
 
-      await er.init({
-         apiHost: 'https://handsomelai.shop',
-         userKey: '',
-         clientToken: '',
-      });
-
+     await er.init({
+       apiHost: "https://handsomelai.shop",
+       userKey: "",
+       clientToken: "",
+     });
      ```
 
    - **Usage**
 
-     ```
+     ```javascript
      app.use(er.requestHandler());
 
-      app.get('/typeError', async (req, res, next) => {
-         try {
-            console.logg('Hi');
-         } catch (e) {
-            next(e);
-         }
-      });
+     app.get("/typeError", async (req, res, next) => {
+       try {
+         console.logg("Hi");
+       } catch (e) {
+         next(e);
+       }
+     });
 
-      // ... routes
+     // ... routes
 
-      app.use(er.errorHandler());
+     app.use(er.errorHandler());
 
-      // Global error handler
-      app.use((err, req, res, next) => {
-         res.status(error.statusCode).json({
-            error: error.message,
-         });
-      });
+     // Global error handler
+     app.use((err, req, res, next) => {
+       res.status(error.statusCode).json({
+         error: error.message,
+       });
+     });
      ```
 
 4. Built and upload source map file by [FalconEye wizard](https://www.npmjs.com/package/@falconeye-tech/wizard)(optional)
