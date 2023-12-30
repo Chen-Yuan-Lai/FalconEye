@@ -62,8 +62,8 @@ FalconEye is a developer-first error tracking platform that help developers to c
 
       <table>
       <tr>
-         <td valign="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/9b0c4638-88ea-4516-83f9-b2559ae10be8" style="vertical-align: top;" />Get user key</td>
-         <td valign="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/ecb0d26b-f9a7-4d3f-af22-b915156693f0" />Get client token</td>
+         <td align="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/9b0c4638-88ea-4516-83f9-b2559ae10be8" style="vertical-align: top;" />Get user key</td>
+         <td align="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/ecb0d26b-f9a7-4d3f-af22-b915156693f0" />Get client token</td>
       </tr>
       </table>
 
@@ -126,14 +126,24 @@ FalconEye is a developer-first error tracking platform that help developers to c
 
 ![system design](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/2a7ad1fd-b170-4dad-bfb8-2d5831316144)
 
-![source map upload](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/acaa6833-2ce0-4755-b2db-b9573142bef3)
+- Enhanced the scalability by decomposing notification and event process features into distinct **Fastify services**, optimizing resource allocation.
+- Improved system scalability by setting up **AWS EventBridge** and **Lambda** for automated task handling and alert checks in the notification service.
+- Optimized system efficiency and job handling capacity by integrating **Apache Kafka** for asynchronously processing high-throughput event and notification tasks.
+- All services in the project are containerized using **Docker**, increasing system portability.
+
+# Monitoring
+
+![monitor](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/7b882914-37d2-41ae-b7b8-2e99cb0d66ee)
+
+- Attained high availability by Monitoring system (CPU, RAM, and disk usage) and specific
+  (Kafka) metrics for each EC2 instance via Prometheus and Grafana servers.
+
+<!-- ![source map upload](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/acaa6833-2ce0-4755-b2db-b9573142bef3)
 
 ![event process](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/90b0f1ea-3592-48db-925f-b8158e34d274)
 
 ![alert](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/95cd6ed7-1f15-4643-9d60-6989aa78b630)
 
-![query](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/453ecf38-f696-4339-b00e-cdb8b944c0db)
-
-![monitor](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/7b882914-37d2-41ae-b7b8-2e99cb0d66ee)
+![query](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/453ecf38-f696-4339-b00e-cdb8b944c0db) -->
 
 # Table Schema
