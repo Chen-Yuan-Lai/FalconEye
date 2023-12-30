@@ -8,11 +8,13 @@ FalconEye is a developer-first error tracking platform that help developers to c
 
 # Outline
 
-- [Waht's FalconEye]()
-- [Features]()
-- [Getting Started]()
-- [Architechture]()
-- [Table Schema]()
+- [Waht's FalconEye](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#whats-falcoeye)
+- [Features](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#features)
+- [Getting Started](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#getting-started)
+- [Architechture](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#architecture)
+- [Monitoring](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#monitoring)
+- [Table Schema](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#table-schema)
+- [License]()
 
 # Features
 
@@ -147,3 +149,7 @@ FalconEye is a developer-first error tracking platform that help developers to c
 ![query](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/453ecf38-f696-4339-b00e-cdb8b944c0db) -->
 
 # Table Schema
+
+# License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/Chen-Yuan-Lai/FalconEye/blob/develop/LICENSE) file for details.
