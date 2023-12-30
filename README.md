@@ -25,14 +25,23 @@ FalconEye is a developer-first error tracking platform that help developers to c
 
 - A simple interactive command-line user interface is provided, where setting up the configuration requires answering only a few questions.
 - Source map files, are automatically built from the source code and uploaded by GitHub Actions.
+  ![wizard](https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/e6577bd9-bd03-4ff2-ae08-c91e9994b2c5)
+  ![GitHub Actions](https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/8e464135-9040-46c3-a2a7-608e6619fd5d)
 
 ### **Personalized analytics dashboard**
 
--Time-series-based plots for errors and alerts help users manage projects more effectively.
+- Simplify and organize error logs by classifying them into distinct issues to reduce duplicate information.
+- Time-series-based plots for errors and alerts help users manage projects more effectively.
 
 ### **Source code location mapping**
 
+- Provided a precise code block for each error, enabling users to easily locate and address bugs.
+  ![codeBlock](https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/f1b58cae-6d1c-4dbb-a23b-15b12fd132b5)
+
 ### **Customized alert system**
+
+- Provided various rules, threshold, and checking interval, users can create application-specific alerting tailored to their specific needs.
+  ![alert](https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/6561824e-d154-4e2c-beee-304d6cd7ab25)
 
 # Getting Started
 
@@ -43,7 +52,9 @@ FalconEye is a developer-first error tracking platform that help developers to c
    | Email           | a186235@gmail.com |
    | Password        | 1234              |
 
-   you can look some example issues and dashboard in the account. If you want to capture errors by yourself, following steps below.
+   - you can look some example issues and dashboard in the account.
+   - Trying to install the [example project](https://github.com/Chen-Yuan-Lai/targetProject) and experience how FalconEye capturing errors.
+   - If you want to capture errors by yourself, following steps below.
 
 2. Create a project on projects page, and:
 
@@ -51,8 +62,8 @@ FalconEye is a developer-first error tracking platform that help developers to c
 
       <table>
       <tr>
-         <td valign="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/c781c372-b84a-49e5-9d50-72b95e5e9d95" style="vertical-align: top;" /></td>
-         <td valign="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/ec87fc23-a7ed-47f5-bc57-5dac861528c7" /></td>
+         <td valign="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/9b0c4638-88ea-4516-83f9-b2559ae10be8" style="vertical-align: top;" />Get user key</td>
+         <td valign="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/ecb0d26b-f9a7-4d3f-af22-b915156693f0" />Get client token</td>
       </tr>
       </table>
 
@@ -112,6 +123,18 @@ FalconEye is a developer-first error tracking platform that help developers to c
    npx @falconeye-tech/wizard wizard
    ```
 
-# Architechture
+# Architecture
+
+![system design](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/2a7ad1fd-b170-4dad-bfb8-2d5831316144)
+
+![source map upload](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/acaa6833-2ce0-4755-b2db-b9573142bef3)
+
+![event process](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/90b0f1ea-3592-48db-925f-b8158e34d274)
+
+![alert](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/95cd6ed7-1f15-4643-9d60-6989aa78b630)
+
+![query](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/453ecf38-f696-4339-b00e-cdb8b944c0db)
+
+![monitor](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/7b882914-37d2-41ae-b7b8-2e99cb0d66ee)
 
 # Table Schema
