@@ -1,5 +1,7 @@
 ![](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/1962fb41-8ae1-43a1-b303-c667e407a345)
 
+### Say Goodbye to your sly bug
+
 # What's FalcoEye
 
 FalconEye is a developer-first error tracking platform that help developers to continuously manage and analyze errors logs about applications.
@@ -40,13 +42,12 @@ FalconEye is a developer-first error tracking platform that help developers to c
 
    - Get user key & client token
 
-      <div align="center">
-         <div style="display: flex;">
-            <img src="https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/c781c372-b84a-49e5-9d50-72b95e5e9d95" style="vertical-align: top;" />
-            <img src="https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/ec87fc23-a7ed-47f5-bc57-5dac861528c7" />
-         </div>
-      </div>
-   <br/>
+      <table>
+      <tr>
+         <td valign="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/c781c372-b84a-49e5-9d50-72b95e5e9d95" style="vertical-align: top;" /></td>
+         <td valign="top"><img align="top" src="https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/ec87fc23-a7ed-47f5-bc57-5dac861528c7" /></td>
+      </tr>
+      </table>
 
 3. Set up FalconEye SDK in your application runtime (details see [@falcon-tech/node](https://www.npmjs.com/package/@falconeye-tech/sdk))
 
