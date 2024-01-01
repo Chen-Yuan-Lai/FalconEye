@@ -1,6 +1,7 @@
-![](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/1962fb41-8ae1-43a1-b303-c667e407a345)
-
-### Say Goodbye to your sly bug
+<p align="center">
+  <img  src="https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/1962fb41-8ae1-43a1-b303-c667e407a345">
+  Say Goodbye to your sly bug.
+</p>
 
 # What's FalcoEye
 
@@ -13,8 +14,8 @@ FalconEye is a developer-first error tracking platform that help developers to c
 - [Getting Started](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#getting-started)
 - [Architechture](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#architecture)
 - [Monitoring](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#monitoring)
-- [Table Schema](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#table-schema)
-- [License]()
+
+- [License](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#license)
 
 # Features
 
@@ -28,12 +29,13 @@ FalconEye is a developer-first error tracking platform that help developers to c
 - A simple interactive command-line user interface is provided, where setting up the configuration requires answering only a few questions.
 - Source map files, are automatically built from the source code and uploaded by GitHub Actions.
   ![wizard](https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/e6577bd9-bd03-4ff2-ae08-c91e9994b2c5)
-  ![GitHub Actions](https://github.com/Chen-Yuan-Lai/targetProject/assets/108986288/8e464135-9040-46c3-a2a7-608e6619fd5d)
+  ![GitHub Actions](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/a1c266bd-ec70-4087-b08d-6981516446e2)
 
 ### **Personalized analytics dashboard**
 
 - Simplify and organize error logs by classifying them into distinct issues to reduce duplicate information.
 - Time-series-based plots for errors and alerts help users manage projects more effectively.
+  ![dashboard](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/a85b05a1-7cb6-4748-9e7c-eaa81c3f5a1d)
 
 ### **Source code location mapping**
 
@@ -147,8 +149,6 @@ FalconEye is a developer-first error tracking platform that help developers to c
 ![alert](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/95cd6ed7-1f15-4643-9d60-6989aa78b630)
 
 ![query](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/453ecf38-f696-4339-b00e-cdb8b944c0db) -->
-
-# Table Schema
 
 # License
 
