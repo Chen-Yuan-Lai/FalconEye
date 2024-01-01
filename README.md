@@ -1,7 +1,8 @@
-<p align="center">
-  <img  src="https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/1962fb41-8ae1-43a1-b303-c667e407a345">
-  Say Goodbye to your sly bug.
-</p>
+<div style="text-align: center;">
+    <img width="100%" src=https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/1962fb41-8ae1-43a1-b303-c667e407a345>
+</div>
+
+### Say Goodbye to your sly bug.
 
 # What's FalcoEye
 
