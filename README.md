@@ -15,7 +15,7 @@ FalconEye is a developer-first error tracking platform that help developers to c
 - [Getting Started](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#getting-started)
 - [Architechture](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#architecture)
 - [Monitoring](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#monitoring)
-
+- [Schema]()
 - [License](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#license)
 
 # Features
@@ -131,10 +131,46 @@ FalconEye is a developer-first error tracking platform that help developers to c
 
 ![system design](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/2a7ad1fd-b170-4dad-bfb8-2d5831316144)
 
+To enhance system scalability and fault tolerance, FalconEye implemented a strategy of decomposing its monolithic server into multiple microservices, with each service focusing on a specific, simple functionality.
+
+1. Gateway server: Its role is to receive and authenticate client requests, and as a producer, it enqueues the corresponding tasks into Apache Kafka.
+2. [Kafka Service](https://github.com/Chen-Yuan-Lai/kafka): Serves as a mediator between the Gateway Server and other services, storing error log data and tasks for scheduled checks of alert rules.
+
+3. [Event service](https://github.com/Chen-Yuan-Lai/falconeye-event-service):
+4. [Notification service](https://github.com/Chen-Yuan-Lai/falconeye-notification-service):
+
+### Features
+
 - Enhanced the scalability by decomposing notification and event process features into distinct **Fastify services**, optimizing resource allocation.
 - Improved system scalability by setting up **AWS EventBridge** and **Lambda** for automated task handling and alert checks in the notification service.
 - Optimized system efficiency and job handling capacity by integrating **Apache Kafka** for asynchronously processing high-throughput event and notification tasks.
 - All services in the project are containerized using **Docker**, increasing system portability.
+
+# Load test
+
+To test the system's stability under long-term data uploading and writing scenarios, I used K6 to conduct the following test plan.
+
+### Test program
+
+**Warming up phase**: increase to 100 virtual users in 1 minute.
+
+**Phase 1**: maintain 100 virtual users in 3 minutes.
+
+**Increase load**: increase to N virtual users in 1 minute.
+
+**Phase 2**: maintain N virtual users in 3 minutes.
+
+**Cooling down phase**: increase to N virtual users in 1 minute.
+
+### Result
+
+| VUs(p1/p2) | machine type (gateway/ kafka) | failed | RPS   | gateway server CPU usage (min/max) | consumer+kafka CPU usage (min/max) |
+| :--------- | :---------------------------- | :----- | :---- | :--------------------------------- | :--------------------------------- |
+| 100/400    | t2.micro/t2.small             | 0.00%  | 151   | 70/100                             | 40/92                              |
+| 100/400    | 2 \* t2.micro/t2.small        | 0.00%  | 160   | 50/100                             | 45/100                             |
+| 100/600    | t2.micro/t2.small             | 2.42%  | 131   | 70/100                             | 40/100                             |
+| 100/600    | t3.micro/t2.small             | 0.16%  | 198.5 | 70/100                             | 40/100                             |
+| 100/600    | t3.micro/t2.small             | NA     | NA    | 50/-                               | 40/-                               |
 
 # Monitoring
 
@@ -150,6 +186,10 @@ FalconEye is a developer-first error tracking platform that help developers to c
 ![alert](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/95cd6ed7-1f15-4643-9d60-6989aa78b630)
 
 ![query](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/453ecf38-f696-4339-b00e-cdb8b944c0db) -->
+
+# schema
+
+![](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/37626f64-d5d4-4a66-8f03-2eb52dfaf745)
 
 # License
 
