@@ -129,11 +129,11 @@ FalconEye is a developer-first error tracking platform that help developers to c
 
 # Architecture
 
-![system design](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/2a7ad1fd-b170-4dad-bfb8-2d5831316144)
+![System design](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/2a7ad1fd-b170-4dad-bfb8-2d5831316144)
 
-To enhance system scalability and fault tolerance, FalconEye implemented a strategy of decomposing its monolithic server into multiple microservices, with each service focusing on a specific, simple functionality.
+To enhance system scalability and fault tolerance, FalconEye implemented a strategy of decomposing its monolithic server into multiple services, with each one focusing on a specific, simple functionality.
 
-1. Gateway server: Its role is to receive and authenticate client requests, and as a producer, it enqueues the corresponding tasks into Apache Kafka.
+1. Gateway server: Its role is not only to receive and authenticate client requests, but also as a producer, enqueuing the corresponding tasks into Apache Kafka.
 2. [Kafka Service](https://github.com/Chen-Yuan-Lai/kafka): Serves as a mediator between the Gateway Server and other services, storing error log data and tasks for scheduled checks of alert rules.
 
 3. [Event service](https://github.com/Chen-Yuan-Lai/falconeye-event-service):

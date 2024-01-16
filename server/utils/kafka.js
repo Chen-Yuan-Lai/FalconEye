@@ -5,6 +5,13 @@ const brokers = [process.env.KAFKA_BROKER];
 const kafka = new Kafka({
   clientId: 'message-app',
   brokers,
+  retry: {
+    initialRetryTime: 500, // Initial delay between retries in milliseconds
+    retries: Infinity, // Set retries to Infinity for indefinite retries
+    factor: 2, // Exponential factor by which the retry time will be increased
+    multiplier: 1.5, // Multiplier to calculate retry delay
+    maxRetryTime: 60000, // Maximum wait time for a retry in milliseconds
+  },
 });
 
 const producer = kafka.producer();
