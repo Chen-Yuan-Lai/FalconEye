@@ -15,7 +15,7 @@ FalconEye is a developer-first error tracking platform that help developers to c
 - [Getting Started](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#getting-started)
 - [Architechture](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#architecture)
 - [Monitoring](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#monitoring)
-- [Schema]()
+- [Schema](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#schema)
 - [License](https://github.com/Chen-Yuan-Lai/FalconEye?tab=readme-ov-file#license)
 
 # Features
@@ -136,8 +136,8 @@ To enhance system scalability and fault tolerance, FalconEye implemented a strat
 1. Gateway server: Its role is not only to receive and authenticate client requests, but also as a producer, enqueuing the corresponding tasks into Apache Kafka.
 2. [Kafka Service](https://github.com/Chen-Yuan-Lai/kafka): Serves as a mediator between the Gateway Server and other services, storing error log data and tasks for scheduled checks of alert rules.
 
-3. [Event service](https://github.com/Chen-Yuan-Lai/falconeye-event-service):
-4. [Notification service](https://github.com/Chen-Yuan-Lai/falconeye-notification-service):
+3. [Event service](https://github.com/Chen-Yuan-Lai/falconeye-event-service): a consumer to pull and process event data from Kafka
+4. [Notification service](https://github.com/Chen-Yuan-Lai/falconeye-notification-service): a consumer to pull and check alert rule from Kafka
 
 ### Features
 
@@ -181,15 +181,12 @@ To test the system's stability under long-term data uploading and writing scenar
 
 <!-- ![source map upload](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/acaa6833-2ce0-4755-b2db-b9573142bef3)
 
-![event process](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/90b0f1ea-3592-48db-925f-b8158e34d274)
-
-![alert](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/95cd6ed7-1f15-4643-9d60-6989aa78b630)
 
 ![query](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/453ecf38-f696-4339-b00e-cdb8b944c0db) -->
 
 # schema
 
-![](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/37626f64-d5d4-4a66-8f03-2eb52dfaf745)
+![table schema](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/37626f64-d5d4-4a66-8f03-2eb52dfaf745)
 
 # License
 
