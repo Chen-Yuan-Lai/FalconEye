@@ -12,7 +12,15 @@ export const createChannels = async (client, ruleId, channels) => {
   return res.rows;
 };
 
-export const getChannel = async () => {};
+export const getTokens = async (client, ruleId) => {
+  const query = {
+    text: `SELECT token FROM channels WHERE rule_id = $1 AND delete = false`,
+    values: [ruleId],
+  };
+  const res = await client.query(query);
+  const tokens = res.rows.map(el => el.token);
+  return tokens;
+};
 
 export const deleteChannel = async (client, ruleId) => {
   const query = {

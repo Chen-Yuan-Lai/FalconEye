@@ -1,3 +1,4 @@
+import format from 'pg-format';
 import pool from './databasePool.js';
 
 export const createEvent = async (

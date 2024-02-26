@@ -1,5 +1,5 @@
-import pool from './databasePool.js';
 import format from 'pg-format';
+import pool from './databasePool.js';
 
 export const createAlert = async (client, projectId, filter, actionInterval, name, active) => {
   const query = {

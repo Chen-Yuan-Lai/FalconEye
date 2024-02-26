@@ -1,9 +1,12 @@
 import * as AlertModel from '../models/alert.js';
 import * as ChannelModel from '../models/channel.js';
 import * as TriggerModel from '../models/trigger.js';
+import * as ProjectModel from '../models/project.js';
 import pool from '../models/databasePool.js';
 import AppError from '../utils/appError.js';
-
+import checker from '../utils/checkRules.js';
+import AlertCronJob from '../utils/AlertCronJob.js';
+import sendNotification from '../utils/sendNotification.js';
 import {
   createRule,
   createTarget,
@@ -13,6 +16,9 @@ import {
   removeTargets,
 } from '../aws/eventBridge.js';
 import { addPermission, removePermission } from '../aws/lambda.js';
+
+const mode = process.env.KAFKA_MODE;
+const jobs = new AlertCronJob();
 
 export const PAGE_SIZE = 6;
 
@@ -33,21 +39,43 @@ export const createAlert = async (req, res, next) => {
     const ruleId = alertRes.id;
     const triggerRes = await TriggerModel.createTriggers(client, ruleId, triggers);
     const channelRes = await ChannelModel.createChannels(client, ruleId, channels);
-
-    const eventBridgeRes = await createRule(ruleId, actionInterval);
-    const targetRes = await createTarget(ruleId);
-    const addPermissionRes = await addPermission(ruleId);
-    await client.query('COMMIT');
-
-    res.status(200).json({
-      data: {
+    let data;
+    if (mode === '1') {
+      const eventBridgeRes = await createRule(ruleId, actionInterval);
+      const targetRes = await createTarget(ruleId);
+      const addPermissionRes = await addPermission(ruleId);
+      await client.query('COMMIT');
+      data = {
         alertRes,
         triggerRes,
         channelRes,
         eventBridgeRes,
         targetRes,
         addPermissionRes,
-      },
+      };
+    } else {
+      const issuesInterval = await ProjectModel.getIssuesStatistic(
+        client,
+        projectId,
+        actionInterval,
+      );
+      jobs.setCronJob(actionInterval, async () => {
+        if (checker(client, triggers, projectId, issuesInterval, filter)) {
+          const tokens = await ChannelModel.getTokens(client, ruleId);
+          await AlertModel.createAlertHistory(client, ruleId);
+          await sendNotification('Your project has something wrong!', tokens);
+        }
+      });
+      data = {
+        alertRes,
+        triggerRes,
+        channelRes,
+        currentJobs: jobs.current,
+      };
+    }
+
+    res.status(200).json({
+      data,
     });
   } catch (err) {
     console.error(err);
