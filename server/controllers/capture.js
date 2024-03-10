@@ -59,7 +59,7 @@ export const createEvent = async (req, res, next) => {
       const keyString = newestMap.file_name;
 
       // pull source map file from S3
-      const response = await getObject('JcGqkuHAoypS.map');
+      const response = await getObject(keyString);
       const map = await response.Body.transformToString();
 
       const codeBlocksPromises = stackObjs.map(el => locateMap(map, el.fileName, el.line, stack));
