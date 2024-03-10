@@ -1,3 +1,5 @@
+import pool from './databasePool.js';
+
 export const createChannels = async (client, ruleId, channels) => {
   const modifyChannels = channels.flatMap(el => [ruleId, el.userId, el.type, el.token]);
 
@@ -12,13 +14,19 @@ export const createChannels = async (client, ruleId, channels) => {
   return res.rows;
 };
 
-export const getTokens = async (client, ruleId) => {
+export const getTokens = async ruleId => {
   const query = {
-    text: `SELECT token FROM channels WHERE rule_id = $1 AND delete = false`,
+    text: `SELECT
+            c.rule_id,
+            c.token
+          FROM channels c 
+          WHERE 
+            rule_id = $1 
+            AND delete = false`,
     values: [ruleId],
   };
-  const res = await client.query(query);
-  const tokens = res.rows.map(el => el.token);
+  const res = await pool.query(query);
+  const tokens = res.rows;
   return tokens;
 };
 

@@ -212,7 +212,7 @@ export const getIssues = async (userId, queryParams) => {
   return res.rows;
 };
 
-export const getIssuesStatistic = async (client, projectId, interval = null) => {
+export const getIssuesStatistic = async (projectId, interval = null) => {
   const queryText = format(
     `SELECT 
       DISTINCT(e.fingerprints) AS issue,
@@ -234,8 +234,8 @@ export const getIssuesStatistic = async (client, projectId, interval = null) => 
   );
   const query = {
     text: queryText,
-    values: [projectId],
+    values: [Number(projectId)],
   };
-  const res = await client.query(query);
+  const res = await pool.query(query);
   return res.rows;
 };

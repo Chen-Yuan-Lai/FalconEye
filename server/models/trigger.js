@@ -21,12 +21,20 @@ export const createTriggers = async (client, ruleId, triggers) => {
   return res.rows;
 };
 
-export const getTriggers = async (client, ruleId) => {
+export const getTriggers = async ruleId => {
   const query = {
-    text: `SELECT * FROM triggers WHERE rule_id = $1 AND delete = false`,
+    text: `SELECT 
+            t.rule_id,
+            t.threshold,
+            t.time_window,
+            t.trigger_type_id
+          FROM triggers t
+          WHERE 
+            rule_id = $1 
+            AND delete = false`,
     values: [ruleId],
   };
-  const res = await client.query(query);
+  const res = await pool.query(query);
 
   return res.rows;
 };

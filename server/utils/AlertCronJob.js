@@ -1,4 +1,9 @@
 import schedule from 'node-schedule';
+import { getValidAlerts, createAlertHistory } from '../models/alert.js';
+import { getIssuesStatistic } from '../models/project.js';
+import { getTriggers } from '../models/trigger.js';
+import { getTokens } from '../models/channel.js';
+import sendNotification from './sendNotification.js';
 
 class AlertCronJob {
   constructor() {
@@ -6,22 +11,104 @@ class AlertCronJob {
     this.current = 0;
   }
 
-  setCronJob(actionInterval, ruleId, fn) {
+  addCronJob(ruleId, job) {
+    this._jobs[ruleId] = job;
+    this.current += 1;
+  }
+
+  setCronJob(ruleId, job) {
     const regex = /(\d+)([a-zA-z]+)/;
-    const interval = actionInterval.match(regex);
+    const interval = job.actionInterval.match(regex);
     const rule = new schedule.RecurrenceRule();
 
     if (interval[2] === 'm') {
-      rule.minute = new schedule.Range(0, 59, +interval[1] - 1);
+      rule.minute = new schedule.Range(0, 59, Number(interval[1]) - 1);
     }
     if (interval[2] === 'hr') {
-      rule.hour = new schedule.Range(0, 23, +interval[1] - 1);
+      rule.hour = new schedule.Range(0, 23, Number(interval[1]) - 1);
     }
 
-    const job = schedule.scheduleJob(rule, fn);
+    schedule.scheduleJob(rule, this.checkJob.bind(this, ruleId, job));
+  }
 
-    this._jobs[rule] = job;
-    this.current += 1;
+  async loadJobs() {
+    const validRules = await getValidAlerts();
+    const triggersPromises = [];
+    const channelsPromises = [];
+    validRules.forEach(rule => {
+      triggersPromises.push(getTriggers(rule.id));
+      channelsPromises.push(getTokens(rule.id));
+    });
+    const triggers = await Promise.all(triggersPromises);
+    const channels = await Promise.all(channelsPromises);
+
+    validRules.forEach(rule => {
+      this._jobs[rule.id] = {
+        projectId: rule.project_id,
+        filter: rule.filter,
+        actionInterval: rule.action_interval,
+        name: rule.name,
+        active: rule.active,
+      };
+    });
+
+    triggers.forEach(trigger => {
+      const ruleId = trigger[0].rule_id;
+      const t = trigger.map(el => ({
+        threshold: el.threshold,
+        time_window: el.time_window,
+        triggerTypeId: el.trigger_type_id,
+      }));
+      this._jobs[ruleId].triggers = t;
+    });
+
+    channels.forEach(channel => {
+      const ruleId = channel[0].rule_id;
+      const c = channel.map(el => el.token);
+      this._jobs[ruleId].channels = c;
+    });
+
+    Object.keys(this._jobs).forEach(ruleId => {
+      const job = this._jobs[ruleId];
+      if (job.active) {
+        console.log(job);
+        this.setCronJob(ruleId, job);
+      }
+    });
+
+    console.log('Loading current active jobs successfully!');
+  }
+
+  async checker(projectId, issuesInterval, triggers, filter) {
+    const hitCount = new Array(4).fill(0);
+    for (let i = 0; i < triggers.length; i += 1) {
+      const triggerId = Number(triggers[i].triggerTypeId);
+      const threshold = Number(triggers[i].threshold);
+      const issuesByTrigger = await getIssuesStatistic(projectId, triggers[i].time_window);
+      const checkThreshold = type => issuesByTrigger.find(el => Number(el[type]) > threshold);
+
+      if (triggerId === 1 && issuesInterval.length > 0) hitCount[1] += 1;
+      if (triggerId === 2 && Boolean(checkThreshold('event_num'))) hitCount[2] += 1;
+      if (triggerId === 3 && Boolean(checkThreshold('users_num'))) hitCount[3] += 1;
+    }
+    const countSum = hitCount.reduce((acc, curr) => acc + curr, 0);
+    if (countSum === triggers.length && filter === 'all') return true;
+    if (countSum > 0 && filter === 'any') return true;
+    return false;
+  }
+
+  async checkJob(ruleId, job) {
+    try {
+      const { projectId, actionInterval, triggers, tokens, filter } = job;
+      const issuesInterval = await getIssuesStatistic(projectId, actionInterval);
+      const isTrigger = await this.checker(projectId, issuesInterval, triggers, filter);
+      if (isTrigger) {
+        await createAlertHistory(ruleId);
+        await sendNotification('Your project has something wrong!', tokens);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   get jobs() {
