@@ -20,8 +20,11 @@ const jobs = new AlertCronJob();
 
 export const PAGE_SIZE = 6;
 
+console.log(`Current system is ${mode === '1' ? 'distributed' : 'monolithic'} architecture`);
 if (mode === '0') {
+  console.log(`========== Corn Jobs Table ============\n`);
   await jobs.loadJobs();
+  console.log(jobs.jobs);
 }
 
 const decideMode = async (executeMode, ruleId, job) => {

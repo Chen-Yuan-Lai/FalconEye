@@ -77,7 +77,6 @@ class AlertCronJob {
     Object.keys(this.#jobs).forEach(ruleId => {
       const job = this.#jobs[ruleId];
       if (job.active) {
-        console.log(job);
         this.setCronJob(ruleId, job);
       }
     });
