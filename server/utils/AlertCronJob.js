@@ -6,14 +6,18 @@ import { getTokens } from '../models/channel.js';
 import sendNotification from './sendNotification.js';
 
 class AlertCronJob {
+  #jobs;
+
+  #jobsNum;
+
   constructor() {
-    this._jobs = {};
-    this.current = 0;
+    this.#jobs = {};
+    this.#jobsNum = 0;
   }
 
   addCronJob(ruleId, job) {
-    this._jobs[ruleId] = job;
-    this.current += 1;
+    this.#jobs[ruleId] = job;
+    this.#jobsNum += 1;
   }
 
   setCronJob(ruleId, job) {
@@ -43,13 +47,15 @@ class AlertCronJob {
     const channels = await Promise.all(channelsPromises);
 
     validRules.forEach(rule => {
-      this._jobs[rule.id] = {
+      this.#jobs[rule.id] = {
         projectId: rule.project_id,
         filter: rule.filter,
         actionInterval: rule.action_interval,
         name: rule.name,
         active: rule.active,
       };
+
+      this.#jobsNum += 1;
     });
 
     triggers.forEach(trigger => {
@@ -59,17 +65,17 @@ class AlertCronJob {
         time_window: el.time_window,
         triggerTypeId: el.trigger_type_id,
       }));
-      this._jobs[ruleId].triggers = t;
+      this.#jobs[ruleId].triggers = t;
     });
 
     channels.forEach(channel => {
       const ruleId = channel[0].rule_id;
       const c = channel.map(el => el.token);
-      this._jobs[ruleId].channels = c;
+      this.#jobs[ruleId].channels = c;
     });
 
-    Object.keys(this._jobs).forEach(ruleId => {
-      const job = this._jobs[ruleId];
+    Object.keys(this.#jobs).forEach(ruleId => {
+      const job = this.#jobs[ruleId];
       if (job.active) {
         console.log(job);
         this.setCronJob(ruleId, job);
@@ -111,8 +117,20 @@ class AlertCronJob {
     }
   }
 
+  updateJob(ruleId, updateObj) {
+    const job = this.#jobs[ruleId];
+
+    Object.keys(updateObj).forEach(key => {
+      job[key] = updateObj[key];
+    });
+  }
+
+  deleteJob(ruleId) {
+    delete this.#jobs[ruleId];
+  }
+
   get jobs() {
-    return this._jobs;
+    return this.#jobs;
   }
 }
 

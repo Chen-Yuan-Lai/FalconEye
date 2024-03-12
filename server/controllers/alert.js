@@ -20,7 +20,9 @@ const jobs = new AlertCronJob();
 
 export const PAGE_SIZE = 6;
 
-await jobs.loadJobs();
+if (mode === '0') {
+  await jobs.loadJobs();
+}
 
 const decideMode = async (executeMode, ruleId, job) => {
   let data;
@@ -116,14 +118,14 @@ export const getAlerts = async (req, res, next) => {
 
 export const getAlert = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
     const { interval } = req.query;
-    const alert = await AlertModel.getAlert(+id);
+    const alert = await AlertModel.getAlert(id);
     if (!alert) {
       return next(new AppError('alert not found', 404));
     }
 
-    const alertTriggeredPerHour = await AlertModel.getAlertPerHour(+id, interval);
+    const alertTriggeredPerHour = await AlertModel.getAlertPerHour(id, interval);
 
     res.status(200).json({
       data: {
@@ -147,19 +149,20 @@ export const updateAlert = async (req, res, next) => {
       return next(new AppError('the alert was already be deleted', 400));
     }
 
-    let eventBridgeRes;
-    if (updateRes.active) {
-      eventBridgeRes = await enableRule(ruleId);
+    const data = { updateRes };
+    if (mode === '1') {
+      let eventBridgeRes;
+      if (updateRes.active) {
+        eventBridgeRes = await enableRule(ruleId);
+      } else {
+        eventBridgeRes = await disableRule(ruleId);
+      }
+      data.eventBridgeRes = eventBridgeRes;
     } else {
-      eventBridgeRes = await disableRule(ruleId);
+      jobs.updateJob(ruleId, fields);
     }
 
-    res.status(200).json({
-      data: {
-        updateRes,
-        eventBridgeRes,
-      },
-    });
+    res.status(200).json({ data });
   } catch (err) {
     console.error(err);
     next(err);
@@ -174,22 +177,18 @@ export const deleteAlert = async (req, res, next) => {
     const channelRes = await ChannelModel.deleteChannel(client, ruleId);
     const triggerRes = await TriggerModel.deleteTrigger(client, ruleId);
     const alertRes = await AlertModel.deleteAlert(client, ruleId);
-
-    const removeTargetsRes = await removeTargets(ruleId);
-    const removePermissionRes = await removePermission(ruleId);
-    const eventBridgeRes = await deleteRule(ruleId);
-
     client.query('COMMIT');
-    res.status(200).json({
-      data: {
-        alertRes,
-        channelRes,
-        triggerRes,
-        removeTargetsRes,
-        eventBridgeRes,
-        removePermissionRes,
-      },
-    });
+
+    const data = { alertRes, triggerRes, channelRes };
+    if (mode === '1') {
+      data.removeTargetsRes = await removeTargets(ruleId);
+      data.removePermissionRes = await removePermission(ruleId);
+      data.eventBridgeRes = await deleteRule(ruleId);
+    } else {
+      jobs.deleteJob(ruleId);
+    }
+
+    res.status(200).json({ data });
   } catch (err) {
     console.error(err);
     client.query('ROLLBACK');
