@@ -10,7 +10,6 @@ export const createChannels = async (client, ruleId, channels) => {
     .join(', ');
   const queryText = `INSERT INTO channels(rule_id, user_id, type, token) VALUES ${placeholders} RETURNING *`;
   const res = await client.query(queryText, modifyChannels);
-
   return res.rows;
 };
 

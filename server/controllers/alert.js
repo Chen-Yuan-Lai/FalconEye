@@ -40,7 +40,7 @@ const decideMode = async (executeMode, ruleId, job) => {
       addPermissionRes,
     };
   } else {
-    jobs.setCronJob(job, ruleId);
+    jobs.setCronJob(ruleId, job);
     data = {
       mode: 'monolithic',
       currentJobs: jobs,
@@ -66,7 +66,7 @@ export const createAlert = async (req, res, next) => {
     const ruleId = alertRes.id;
     const triggerRes = await TriggerModel.createTriggers(client, ruleId, triggers);
     const channelRes = await ChannelModel.createChannels(client, ruleId, channels);
-    const tokens = await ChannelModel.getTokens(ruleId);
+    const tokens = channelRes.map(channel => channel.token);
     await client.query('COMMIT');
 
     const job = {
@@ -78,7 +78,7 @@ export const createAlert = async (req, res, next) => {
       tokens,
       triggers,
     };
-    console.log(job);
+    // console.log(job);
 
     const data = await decideMode(mode, ruleId, job);
     data.ruleId = ruleId;
