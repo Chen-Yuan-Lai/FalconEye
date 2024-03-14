@@ -186,7 +186,7 @@ To test the system's stability under long-term data uploading and writing scenar
 
 # schema
 
-![table schema](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/37626f64-d5d4-4a66-8f03-2eb52dfaf745)
+![table schema](https://github.com/Chen-Yuan-Lai/FalconEye/assets/108986288/d67cbae4-ee8a-4bed-a5de-04670e395494)
 
 # License
 
