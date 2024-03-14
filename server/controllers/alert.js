@@ -78,6 +78,7 @@ export const createAlert = async (req, res, next) => {
       tokens,
       triggers,
     };
+    console.log(job);
 
     const data = await decideMode(mode, ruleId, job);
     data.ruleId = ruleId;
