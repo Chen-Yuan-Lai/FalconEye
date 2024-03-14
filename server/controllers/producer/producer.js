@@ -1,6 +1,6 @@
 import { connectProducer, sendMessage } from '../../utils/kafka.js';
 
-connectProducer();
+if (process.env.KAFKA_MODE === '1') connectProducer();
 
 export const eventProducer = async (req, res, next) => {
   try {

@@ -1,5 +1,5 @@
-import pool from './databasePool.js';
 import format from 'pg-format';
+import pool from './databasePool.js';
 
 export const createAlert = async (client, projectId, filter, actionInterval, name, active) => {
   const query = {
@@ -12,15 +12,34 @@ export const createAlert = async (client, projectId, filter, actionInterval, nam
   return res.rows[0];
 };
 
-export const createAlertHistory = async (client, ruleId) => {
+export const createAlertHistory = async ruleId => {
   const query = {
-    text: `INSERT INTO alert_histories(ruleI)
+    text: `INSERT INTO alert_histories(rule_id)
           VALUES($1) RETURNING *`,
     values: [ruleId],
   };
 
-  const res = await client.query(query);
+  const res = await pool.query(query);
   return res.rows[0];
+};
+
+export const getValidAlerts = async () => {
+  const query = {
+    text: `SELECT 
+              r.id,
+              r.project_id,
+              r.active,
+              r.action_interval,
+              r.filter,
+              r.name
+          FROM 
+              alert_rules AS r
+          WHERE 
+              r.delete = false`,
+  };
+
+  const res = await pool.query(query);
+  return res.rows;
 };
 
 export const getAlerts = async (projectId, pageSize, offsetValue) => {

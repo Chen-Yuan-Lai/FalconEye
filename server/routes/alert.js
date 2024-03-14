@@ -11,7 +11,6 @@ import {
 import authenticate from '../middlewares/authenticate.js';
 
 const router = Router();
-// await connectProducer();
 
 // todo
 router

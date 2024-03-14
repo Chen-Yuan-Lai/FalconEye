@@ -1,6 +1,6 @@
+import format from 'pg-format';
 import { v4 as uuidv4 } from 'uuid';
 import pool from './databasePool.js';
-import format from 'pg-format';
 
 export const createProject = async (framework, userId, name) => {
   const uuid = uuidv4();
@@ -207,6 +207,34 @@ export const getIssues = async (userId, queryParams) => {
   const query = {
     text: queryStr,
     values: [userId, ...queryValue],
+  };
+  const res = await pool.query(query);
+  return res.rows;
+};
+
+export const getIssuesStatistic = async (projectId, interval = null) => {
+  const queryText = format(
+    `SELECT 
+      DISTINCT(e.fingerprints) AS issue,
+      COUNT(DISTINCT(r.ip)) AS users_num,
+      COUNT(DISTINCT(e.id)) AS event_num
+    FROM 
+      events AS e
+    LEFT JOIN
+      request_info as r on r.event_id = e.id
+    WHERE 
+      e.project_id = $1
+      AND e.delete = false
+      AND e.status = 'unhandled'
+      ${interval ? `AND e.created_at >= NOW() - %L::INTERVAL` : ''}
+    GROUP By
+      e.fingerprints
+    `,
+    interval,
+  );
+  const query = {
+    text: queryText,
+    values: [Number(projectId)],
   };
   const res = await pool.query(query);
   return res.rows;
