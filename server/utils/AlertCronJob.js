@@ -22,7 +22,7 @@ class AlertCronJob {
 
   setCronJob(ruleId, job) {
     const regex = /(\d+)([a-zA-z]+)/;
-    console.log(ruleId, job, regex);
+    console.log(typeof job.actionInterval, job.actionInterval);
     const interval = job.actionInterval.match(regex);
     const rule = new schedule.RecurrenceRule();
 
