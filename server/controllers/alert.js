@@ -40,7 +40,10 @@ const decideMode = async (executeMode, ruleId, job) => {
       addPermissionRes,
     };
   } else {
-    jobs.setCronJob(ruleId, job);
+    const cronJob = jobs.setCronJob(ruleId, job);
+    jobs.addCronJob(ruleId, { ...job, cronJob });
+    console.log(jobs.jobs);
+
     data = {
       mode: 'monolithic',
       currentJobs: jobs,
@@ -147,6 +150,7 @@ export const updateAlert = async (req, res, next) => {
   try {
     const { id: ruleId } = req.params;
     const fields = req.body;
+    console.log(fields);
 
     const updateRes = await AlertModel.updateAlert(ruleId, fields);
     if (!updateRes) {

@@ -22,7 +22,6 @@ class AlertCronJob {
 
   setCronJob(ruleId, job) {
     const regex = /(\d+)([a-zA-z]+)/;
-    console.log(typeof job.actionInterval, job.actionInterval);
     const interval = job.actionInterval.match(regex);
     const rule = new schedule.RecurrenceRule();
 
@@ -33,7 +32,7 @@ class AlertCronJob {
       rule.hour = new schedule.Range(0, 23, Number(interval[1]) - 1);
     }
 
-    schedule.scheduleJob(rule, this.checkJob.bind(this, ruleId, job));
+    return schedule.scheduleJob(rule, this.checkJob.bind(this, ruleId, job));
   }
 
   async loadJobs() {
@@ -78,7 +77,7 @@ class AlertCronJob {
     Object.keys(this.#jobs).forEach(ruleId => {
       const job = this.#jobs[ruleId];
       if (job.active) {
-        this.setCronJob(ruleId, job);
+        this.#jobs[ruleId].cronJob = this.setCronJob(ruleId, job);
       }
     });
 
@@ -92,12 +91,13 @@ class AlertCronJob {
       const threshold = Number(triggers[i].threshold);
       const issuesByTrigger = await getIssuesStatistic(projectId, triggers[i].time_window);
       const checkThreshold = type => issuesByTrigger.find(el => Number(el[type]) > threshold);
-
+      console.log(issuesByTrigger);
       if (triggerId === 1 && issuesInterval.length > 0) hitCount[1] += 1;
       if (triggerId === 2 && Boolean(checkThreshold('event_num'))) hitCount[2] += 1;
       if (triggerId === 3 && Boolean(checkThreshold('users_num'))) hitCount[3] += 1;
     }
     const countSum = hitCount.reduce((acc, curr) => acc + curr, 0);
+    console.log(hitCount);
     if (countSum === triggers.length && filter === 'all') return true;
     if (countSum > 0 && filter === 'any') return true;
     return false;
@@ -122,6 +122,14 @@ class AlertCronJob {
 
     Object.keys(updateObj).forEach(key => {
       job[key] = updateObj[key];
+
+      if (key === 'active' && updateObj[key]) {
+        job.cronJob = this.setCronJob(ruleId, job);
+        console.log(`active rule: ${ruleId}`);
+      } else if (key === 'active' && !updateObj[key]) {
+        job.cronJob.cancel(`muted rule: ${ruleId}`);
+        delete job.cronJob;
+      }
     });
   }
 
